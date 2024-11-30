@@ -203,7 +203,7 @@ def home():
 def logout():
     session.clear()
     flash('You have been logged out.')
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 
 @app.route('/discussions')
