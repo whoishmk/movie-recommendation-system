@@ -10,16 +10,33 @@
     <!-- Modify the <nav> section in base.html -->
 <!-- templates/base.html -->
 <!-- templates/base.html -->
+<!-- templates/base.html -->
+<!-- templates/base.html -->
 <nav>
-    <a href="{{ url_for('index') }}">Home</a>
-    {% if session.get('loggedin') %}
-        <!-- Optional: Display user's name or profile picture -->
-        <a href="{{ url_for('logout') }}">Logout</a>
-    {% else %}
-        <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('register') }}">Register</a>
-    {% endif %}
+    <ul class="navbar">
+        <li class="{% if request.endpoint == 'index' %}active{% endif %}">
+            <a href="{{ url_for('index') }}">Home</a>
+        </li>
+        <li class="{% if request.endpoint == 'discussions' %}active{% endif %}">
+            <a href="{{ url_for('discussions') }}">Discussions</a>
+        </li>
+        {% if session.get('loggedin') %}
+            <li class="{% if request.endpoint == 'home' %}active{% endif %}">
+                <a href="{{ url_for('home') }}">Dashboard</a>
+            </li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        {% else %}
+            <li class="{% if request.endpoint == 'login' %}active{% endif %}">
+                <a href="{{ url_for('login') }}">Login</a>
+            </li>
+            <li class="{% if request.endpoint == 'register' %}active{% endif %}">
+                <a href="{{ url_for('register') }}">Register</a>
+            </li>
+        {% endif %}
+    </ul>
 </nav>
+
+
 
 
 

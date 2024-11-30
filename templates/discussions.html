@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Discussion Threads</h2>
+{% if session.get('loggedin') %}
+    <a href="{{ url_for('create_thread') }}">Create New Thread</a>
+{% endif %}
+<ul>
+    {% for thread in threads %}
+    <li>
+        <a href="{{ url_for('view_thread', thread_id=thread.id) }}">{{ thread.title }}</a>
+        <br>
+        <small>Started by {{ thread.name }} on {{ thread.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+        {% if thread.updated_at != thread.created_at %}
+            <small>(Edited {{ thread.updated_at.strftime('%Y-%m-%d %H:%M:%S') }})</small>
+        {% endif %}
+    </li>
+    {% else %}
+    <p>No threads available.</p>
+    {% endfor %}
+</ul>
+{% endblock %}

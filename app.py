@@ -5,7 +5,7 @@ from functools import wraps
 import os
 from werkzeug.utils import secure_filename
 import MySQLdb.cursors
-
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Replace with a secure key
@@ -30,6 +30,15 @@ mysql = MySQL(app)
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 # Login required decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'loggedin' not in session:
+            flash('Please log in to access this page.')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -150,6 +159,174 @@ def logout():
     session.clear()
     flash('You have been logged out.')
     return redirect(url_for('login'))
+
+
+@app.route('/discussions')
+def discussions():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("""
+        SELECT threads.*, users.name
+        FROM threads
+        JOIN users ON threads.user_id = users.id
+        ORDER BY threads.created_at DESC
+    """)
+    threads = cursor.fetchall()
+    cursor.close()
+    return render_template('discussions.html', threads=threads)
+
+@app.route('/thread/<int:thread_id>')
+def view_thread(thread_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # Fetch thread details
+    cursor.execute("""
+        SELECT threads.*, users.name
+        FROM threads
+        JOIN users ON threads.user_id = users.id
+        WHERE threads.id = %s
+    """, (thread_id,))
+    thread = cursor.fetchone()
+    if not thread:
+        flash('Thread not found.')
+        return redirect(url_for('discussions'))
+    # Fetch messages in the thread
+    cursor.execute("""
+        SELECT messages.*, users.name
+        FROM messages
+        JOIN users ON messages.user_id = users.id
+        WHERE messages.thread_id = %s
+        ORDER BY messages.created_at ASC
+    """, (thread_id,))
+    messages = cursor.fetchall()
+    cursor.close()
+    return render_template('view_thread.html', thread=thread, messages=messages)
+
+@app.route('/create_thread', methods=['GET', 'POST'])
+@login_required
+def create_thread():
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        user_id = session['id']
+        cursor = mysql.connection.cursor()
+        cursor.execute("""
+            INSERT INTO threads (title, content, user_id)
+            VALUES (%s, %s, %s)
+        """, (title, content, user_id))
+        mysql.connection.commit()
+        cursor.close()
+        flash('Thread created successfully.')
+        return redirect(url_for('discussions'))
+    return render_template('create_thread.html')
+
+@app.route('/thread/<int:thread_id>/post_message', methods=['POST'])
+@login_required
+def post_message(thread_id):
+    content = request.form['content']
+    user_id = session['id']
+    cursor = mysql.connection.cursor()
+    cursor.execute("""
+        INSERT INTO messages (thread_id, content, user_id)
+        VALUES (%s, %s, %s)
+    """, (thread_id, content, user_id))
+    mysql.connection.commit()
+    cursor.close()
+    flash('Message posted successfully.')
+    return redirect(url_for('view_thread', thread_id=thread_id))
+
+@app.route('/edit_message/<int:message_id>', methods=['GET', 'POST'])
+@login_required
+def edit_message(message_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # Fetch the message
+    cursor.execute("SELECT * FROM messages WHERE id = %s", (message_id,))
+    message = cursor.fetchone()
+    if not message:
+        flash('Message not found.')
+        return redirect(url_for('discussions'))
+    if message['user_id'] != session['id']:
+        flash('You are not authorized to edit this message.')
+        return redirect(url_for('view_thread', thread_id=message['thread_id']))
+    if request.method == 'POST':
+        content = request.form['content']
+        cursor.execute("""
+            UPDATE messages SET content = %s, updated_at = %s WHERE id = %s
+        """, (content, datetime.now(), message_id))
+        mysql.connection.commit()
+        cursor.close()
+        flash('Message updated successfully.')
+        return redirect(url_for('view_thread', thread_id=message['thread_id']))
+    cursor.close()
+    return render_template('edit_message.html', message=message)
+
+
+@app.route('/delete_message/<int:message_id>', methods=['POST'])
+@login_required
+def delete_message(message_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # Fetch the message
+    cursor.execute("SELECT * FROM messages WHERE id = %s", (message_id,))
+    message = cursor.fetchone()
+    if not message:
+        flash('Message not found.')
+        return redirect(url_for('discussions'))
+    if message['user_id'] != session['id']:
+        flash('You are not authorized to delete this message.')
+        return redirect(url_for('view_thread', thread_id=message['thread_id']))
+    cursor.execute("DELETE FROM messages WHERE id = %s", (message_id,))
+    mysql.connection.commit()
+    cursor.close()
+    flash('Message deleted successfully.')
+    return redirect(url_for('view_thread', thread_id=message['thread_id']))
+
+
+
+
+@app.route('/edit_thread/<int:thread_id>', methods=['GET', 'POST'])
+@login_required
+def edit_thread(thread_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # Fetch the thread
+    cursor.execute("SELECT * FROM threads WHERE id = %s", (thread_id,))
+    thread = cursor.fetchone()
+    if not thread:
+        flash('Thread not found.')
+        return redirect(url_for('discussions'))
+    if thread['user_id'] != session['id']:
+        flash('You are not authorized to edit this thread.')
+        return redirect(url_for('view_thread', thread_id=thread_id))
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        cursor.execute("""
+            UPDATE threads SET title = %s, content = %s, updated_at = %s WHERE id = %s
+        """, (title, content, datetime.now(), thread_id))
+        mysql.connection.commit()
+        cursor.close()
+        flash('Thread updated successfully.')
+        return redirect(url_for('view_thread', thread_id=thread_id))
+    cursor.close()
+    return render_template('edit_thread.html', thread=thread)
+
+
+@app.route('/delete_thread/<int:thread_id>', methods=['POST'])
+@login_required
+def delete_thread(thread_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # Fetch the thread
+    cursor.execute("SELECT * FROM threads WHERE id = %s", (thread_id,))
+    thread = cursor.fetchone()
+    if not thread:
+        flash('Thread not found.')
+        return redirect(url_for('discussions'))
+    if thread['user_id'] != session['id']:
+        flash('You are not authorized to delete this thread.')
+        return redirect(url_for('view_thread', thread_id=thread_id))
+    cursor.execute("DELETE FROM threads WHERE id = %s", (thread_id,))
+    mysql.connection.commit()
+    cursor.close()
+    flash('Thread deleted successfully.')
+    return redirect(url_for('discussions'))
+
 
 
 
