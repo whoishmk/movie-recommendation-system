@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home | Movie Recommendation System</title>
+  <style>
+    /* General Reset */
+    body {  
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #2b1055, #7597de);
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+ /* Navbar Styles */
+ .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 20px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    overflow: hidden; /* Ensures no elements overflow */
+  }
+
+  .navbar .logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .navbar .logo img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+
+  .navbar .logo span {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #e0b3ff;
+  }
+
+  .navbar .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Ensure consistent spacing between buttons */
+    flex-wrap: wrap; /* Ensures buttons wrap on small screens */
+  }
+
+  .navbar .nav-links a {
+    text-decoration: none;
+    color: #fff;
+    background: linear-gradient(135deg, #6a0dad, #b084f7);
+    padding: 10px 20px; /* Proper padding for consistent button size */
+    border-radius: 25px;
+    font-size: 1rem;
+    transition: 0.3s ease-in-out;
+    white-space: nowrap; /* Prevents text wrapping */
+  }
+
+  .navbar .nav-links a:hover {
+    background: linear-gradient(135deg, #b084f7, #6a0dad);
+  }
+
+  /* Responsive Design for Smaller Screens */
+  @media (max-width: 600px) {
+    .navbar {
+      flex-wrap: wrap; /* Allow navbar to wrap on small screens */
+      padding: 10px;
+    }
+
+    .navbar .nav-links {
+      justify-content: flex-end;
+      width: 100%; /* Align buttons to the right */
+    }
+
+    .navbar .nav-links a {
+      padding: 8px 15px; /* Slightly smaller buttons for smaller screens */
+    }
+  }
+
+
+    /* Main Container */
+    .home-container {
+      text-align: center;
+      padding-top: 100px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      color: #e0b3ff;
+    }
+
+    /* Poster Carousel */
+    .carousel-container {
+      position: relative;
+      width: 90%;
+      margin: 0 auto;
+      padding-top: 20px;
+    }
+
+    .carousel {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      padding: 20px;
+      scroll-behavior: smooth;
+    }
+
+    .poster {
+      min-width: 200px;
+      height: 300px;
+      background: #222;
+      border-radius: 15px;
+      overflow: hidden;
+      position: relative;
+      transition: 0.3s ease-in-out;
+      flex: 0 0 auto;
+    }
+
+    .poster img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .poster:hover {
+      transform: scale(1.1);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Scroll Buttons */
+    .scroll-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 10px 15px;
+      z-index: 10;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    .scroll-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .scroll-left {
+      left: 10px;
+    }
+
+    .scroll-right {
+      right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">
+      <img src="IMG_0895.jpg" alt="Logo">
+      <span>Movie Haven</span>
+    </div>
+    <div class="nav-links">
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="home-container">
+    <h1>Welcome to Your Movie Haven</h1>
+    <div class="carousel-container">
+      <button class="scroll-btn scroll-left">&larr;</button>
+      <div class="carousel">
+        <!-- Poster 1 -->
+        <a href="https://www.imdb.com/title/tt4154796/" target="_blank" class="poster">
+          <img src="https://m.media-amazon.com/images/I/81ExhpBEbHL._AC_SY679_.jpg" alt="Avengers: Endgame">
+        </a>
+        <!-- Poster 2 -->
+        <a href="https://www.imdb.com/title/tt1375666/" target="_blank" class="poster">
+          <img src="https://m.media-amazon.com/images/I/51NbVEuw1HL._AC_.jpg" alt="Inception">
+        </a>
+        <!-- Poster 3 -->
+        <a href="https://www.imdb.com/title/tt7286456/" target="_blank" class="poster">
+          <img src="https://m.media-amazon.com/images/I/71xBLRBYOiL._AC_SY679_.jpg" alt="Joker">
+        </a>
+        <!-- Poster 4 -->
+        <a href="https://www.imdb.com/title/tt6751668/" target="_blank" class="poster">
+          <img src="https://m.media-amazon.com/images/I/91hq9ZIbceL._AC_SY679_.jpg" alt="Parasite">
+        </a>
+        <!-- Poster 5 -->
+        <a href="https://www.imdb.com/title/tt0111161/" target="_blank" class="poster">
+          <img src="https://m.media-amazon.com/images/I/51NiGlapXlL._AC_.jpg" alt="The Shawshank Redemption">
+        </a>
+      </div>
+      <button class="scroll-btn scroll-right">&rarr;</button>
+    </div>
+  </div>
+
+  <script>
+    // JavaScript for Carousel Scroll Buttons
+    document.addEventListener("DOMContentLoaded", () => {
+      const carousel = document.querySelector(".carousel");
+      const scrollLeft = document.querySelector(".scroll-left");
+      const scrollRight = document.querySelector(".scroll-right");
+
+      // Scroll left
+      scrollLeft.addEventListener("click", () => {
+        carousel.scrollBy({
+          left: -300,
+          behavior: "smooth",
+        });
+      });
+
+      // Scroll right
+      scrollRight.addEventListener("click", () => {
+        carousel.scrollBy({
+          left: 300,
+          behavior: "smooth",
+        });
+      });
+    });
+  </script>
+</body>
+</html>

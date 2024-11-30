@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <style>
+    /* General Reset */
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #2b1055, #7597de);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+
+    /* Form Container */
+    .register-container {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 25px 35px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #e0b3ff;
+    }
+
+    /* Form Fields */
+    .form-control {
+      margin: 15px 0;
+      position: relative;
+    }
+
+    .form-control input {
+      width: 100%;
+      padding: 10px 15px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      outline: none;
+      transition: 0.3s ease-in-out;
+    }
+
+    .form-control input:focus {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 8px #b084f7;
+    }
+
+    .form-control label {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      color: #aaa;
+      pointer-events: none;
+      transition: 0.3s;
+    }
+
+    .form-control input:focus + label,
+    .form-control input:not(:placeholder-shown) + label {
+      top: -10px;
+      left: 10px;
+      font-size: 0.8rem;
+      color: #e0b3ff;
+    }
+
+    /* Submit Button */
+    .btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #6a0dad, #b084f7);
+      border: none;
+      border-radius: 25px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, #b084f7, #6a0dad);
+    }
+
+    /* Link to Login */
+    .login-link {
+      display: block;
+      margin-top: 15px;
+      color: #b084f7;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: 0.3s;
+    }
+
+    .login-link:hover {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <h1>Register</h1>
+    <form method="post" action="/register">
+      <div class="form-control">
+        <input type="text" id="username" name="username" placeholder=" " required>
+        <label for="username">Username</label>
+      </div>
+      <div class="form-control">
+        <input type="password" id="password" name="password" placeholder=" " required>
+        <label for="password">Password</label>
+      </div>
+      <div class="form-control">
+        <input type="email" id="email" name="email" placeholder=" " required>
+        <label for="email">Email</label>
+      </div>
+      <button type="submit" class="btn">Register</button>
+    </form>
+    <a href="/login" class="login-link">Already have an account? Login here</a>
+  </div>
+</body>
+</html>

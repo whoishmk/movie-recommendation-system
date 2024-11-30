@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    /* General Reset */
+    body {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #1f19c2, #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+    }
+
+    /* Form Container */
+    .login-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    /* Input Fields */
+    .form-control {
+      margin: 15px 0;
+      position: relative;
+    }
+
+    .form-control input {
+      width: 100%;
+      padding: 10px 15px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      outline: none;
+      transition: 0.3s ease-in-out;
+    }
+
+    .form-control input:focus {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-control label {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      color: #ddd;
+      pointer-events: none;
+      transition: 0.3s;
+    }
+
+    .form-control input:focus + label,
+    .form-control input:not(:placeholder-shown) + label {
+      top: -10px;
+      left: 10px;
+      font-size: 0.8rem;
+      color: #fff;
+    }
+
+    /* Submit Button */
+    .btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #00c6ff;
+      border: none;
+      border-radius: 25px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #591c9e;
+    }
+
+    /* Link to Register */
+    .register-link {
+      display: block;
+      margin-top: 10px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: 0.3s;
+    }
+
+    .register-link:hover {
+      color: #00c6ff;
+    }
+
+    /* Small screen adjustments */
+    @media (max-width: 480px) {
+      .login-container {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Login</h1>
+    <form method="post" action="/login">
+      <div class="form-control">
+        <input type="text" id="username" name="username" placeholder=" " required autofocus>
+        <label for="username">Username</label>
+      </div>
+      <div class="form-control">
+        <input type="password" id="password" name="password" placeholder=" " required>
+        <label for="password">Password</label>
+      </div>
+      <button type="submit" class="btn">Login</button>
+    </form>
+    <a href="/register" class="register-link">Don't have an account? Register here</a>
+  </div>
+
+  <script>
+    // Add a smooth hover effect for inputs
+    const inputs = document.querySelectorAll('.form-control input');
+    inputs.forEach(input => {
+      input.addEventListener('focus', () => {
+        input.style.boxShadow = '0 0 10px rgba(255, 255, 255, 0.8)';
+      });
+      input.addEventListener('blur', () => {
+        input.style.boxShadow = 'none';
+      });
+    });
+  </script>
+</body>
+</html>
