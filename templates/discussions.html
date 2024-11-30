@@ -1,21 +1,100 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Discussion Threads</h2>
+
+<style>
+    /* Container for discussion threads */
+    .thread-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+
+    /* Individual thread item (square box) */
+    .thread-item {
+        background-color: #1f1f1f;
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+    }
+
+    .thread-item:hover {
+        transform: scale(1.03);
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .thread-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #bb86fc;
+        text-decoration: none;
+    }
+
+    .thread-title:hover {
+        color: #ffffff;
+    }
+
+    .thread-meta {
+        margin-top: 10px;
+        font-size: 0.9em;
+        color: #cccccc;
+    }
+
+    .thread-content {
+        font-size: 1em;
+        color: #ffffff;
+        margin-top: 10px;
+    }
+
+    .button {
+        display: inline-block;
+        background-color: #6200ee;
+        color: #ffffff;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 4px;
+        margin: 20px;
+        font-size: 1em;
+    }
+
+    .button:hover {
+        background-color: #3700b3;
+    }
+</style>
+
+<!-- Create Thread Button -->
 {% if session.get('loggedin') %}
-    <a href="{{ url_for('create_thread') }}">Create New Thread</a>
+    <a href="{{ url_for('create_thread') }}" class="button">Create New Thread</a>
 {% endif %}
-<ul>
-    {% for thread in threads %}
-    <li>
-        <a href="{{ url_for('view_thread', thread_id=thread.id) }}">{{ thread.title }}</a>
-        <br>
-        <small>Started by {{ thread.name }} on {{ thread.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</small>
-        {% if thread.updated_at != thread.created_at %}
-            <small>(Edited {{ thread.updated_at.strftime('%Y-%m-%d %H:%M:%S') }})</small>
-        {% endif %}
-    </li>
-    {% else %}
+
+<!-- Display Threads -->
+{% if threads %}
+    <div class="thread-list">
+        {% for thread in threads %}
+        <div class="thread-item">
+            <a href="{{ url_for('view_thread', thread_id=thread.id) }}" class="thread-title">
+                {{ thread.title }}
+            </a>
+            <div class="thread-content">
+                {{ thread.content[:100] }}... <!-- Show a snippet of the message -->
+            </div>
+            <div class="thread-meta">
+                <small>
+                    Started by {{ thread.name }} on {{ thread.created_at.strftime('%B %d, %Y %I:%M %p') }}
+                    {% if thread.updated_at != thread.created_at %}
+                        (Edited {{ thread.updated_at.strftime('%B %d, %Y %I:%M %p') }})
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
     <p>No threads available.</p>
-    {% endfor %}
-</ul>
+{% endif %}
+
 {% endblock %}

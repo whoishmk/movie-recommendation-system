@@ -55,7 +55,7 @@ def index():
     if 'loggedin' in session:
         return redirect(url_for('home'))
     else:
-        return render_template('index.html')
+        return render_template('home.html')
 
 
 

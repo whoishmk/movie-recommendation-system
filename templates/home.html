@@ -1,8 +1,126 @@
-<!-- templates/home.html -->
-<!-- templates/home.html -->
 {% extends "base.html" %}
 {% block content %}
-<h2>Welcome, {{ session['name'] }}!</h2>
-<img src="{{ url_for('static', filename='uploads/' + profile_pic) }}" alt="Profile Picture" width="150">
-<p>This is your home page.</p>
+<h2>Welcome to Movie Recommender!</h2>
+
+<style>
+    /* Netflix-Style Layout */
+    .movie-sections {
+        margin: 20px 0;
+    }
+
+    .movie-row {
+        margin-bottom: 40px;
+        position: relative;
+    }
+
+    .movie-row h3 {
+        font-size: 2em;
+        margin-left: 10px;
+        color: #ffffff;
+    }
+
+    .movie-posters {
+        display: flex;
+        overflow: hidden;
+        padding: 10px;
+        gap: 20px;
+        scroll-behavior: smooth;
+    }
+
+    .movie-poster {
+        flex: 0 0 auto;
+        width: 350px; /* Increased width for bigger posters */
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .movie-poster img {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .movie-poster:hover img {
+        transform: scale(1.1);
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .movie-title {
+        margin-top: 5px;
+        text-align: center;
+        font-size: 1.2em; /* Slightly larger title font */
+        color: #cccccc;
+    }
+
+    .scroll-button {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #ffffff;
+        border: none;
+        padding: 15px;
+        font-size: 2em;
+        cursor: pointer;
+        border-radius: 50%;
+        z-index: 10;
+    }
+
+    .scroll-button.left {
+        left: 10px;
+    }
+
+    .scroll-button.right {
+        right: 10px;
+    }
+
+    .scroll-button:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    @media (max-width: 768px) {
+        .movie-poster {
+            width: 200px; /* Smaller posters for mobile screens */
+        }
+    }
+</style>
+
+<div class="movie-sections">
+    <div class="movie-row">
+        <h3>Trending</h3>
+        <button class="scroll-button left" onclick="scrollRow(this, -1)">&#8249;</button>
+        <div class="movie-posters">
+            <div class="movie-poster">
+                <img src="https://via.placeholder.com/350x500" alt="Placeholder Movie">
+                <div class="movie-title">Placeholder Movie 1</div>
+            </div>
+            <div class="movie-poster">
+                <img src="https://via.placeholder.com/350x500" alt="Placeholder Movie">
+                <div class="movie-title">Placeholder Movie 2</div>
+            </div>
+            <div class="movie-poster">
+                <img src="https://via.placeholder.com/350x500" alt="Placeholder Movie">
+                <div class="movie-title">Placeholder Movie 3</div>
+            </div>
+            <div class="movie-poster">
+                <img src="https://via.placeholder.com/350x500" alt="Placeholder Movie">
+                <div class="movie-title">Placeholder Movie 4</div>
+            </div>
+            <div class="movie-poster">
+                <img src="https://via.placeholder.com/350x500" alt="Placeholder Movie">
+                <div class="movie-title">Placeholder Movie 5</div>
+            </div>
+        </div>
+        <button class="scroll-button right" onclick="scrollRow(this, 1)">&#8250;</button>
+    </div>
+</div>
+
+<script>
+    function scrollRow(button, direction) {
+        const row = button.parentElement.querySelector('.movie-posters');
+        const scrollAmount = 350; // Adjusted to match the poster width
+        row.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    }
+</script>
 {% endblock %}
