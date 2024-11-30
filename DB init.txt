@@ -1,0 +1,15 @@
+-- Create the database
+CREATE DATABASE movie_recommender;
+
+-- Use the new database
+USE movie_recommender;
+
+-- Create the users table
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    gender ENUM('Male', 'Female', 'Rather not say') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
