@@ -180,23 +180,41 @@
         .discussion-form textarea {
             height: 100px;
         }
+            /* Notification badge styling */
+    .notification-badge {
+        background-color: #d32f2f;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 50%;
+        font-size: 0.8em;
+        vertical-align: super;
+    }
     </style>
 </head>
 <body>
     <nav>
-        <ul class="navbar clearfix">
-            <li class="{% if request.endpoint == 'index' %}active{% endif %}">
-                <a href="{{ url_for('index') }}">Home</a>
-            </li>
-            <li class="{% if request.endpoint == 'discussions' %}active{% endif %}">
-                <a href="{{ url_for('discussions') }}">Discussions</a>
-            </li>
+        <!-- Existing navigation links -->
+        <ul>
             {% if session.get('loggedin') %}
-                <li class="{% if request.endpoint == 'home' %}active{% endif %}">
-                    <a href="{{ url_for('home') }}">Dashboard</a>
+                <!-- Other links -->
+                <li>
+                    <a href="{{ url_for('home') }}">Home</a>
                 </li>
-                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                <li>
+                    <a href="{{ url_for('discussions') }}">Discussions</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('view_notifications') }}">Notifications
+                        {% if notifications|length > 0 %}
+                            <span class="notification-badge">{{ notifications|length }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                </li>
             {% else %}
+                <!-- Login/Register links -->
                 <li class="{% if request.endpoint == 'login' %}active{% endif %}">
                     <a href="{{ url_for('login') }}">Login</a>
                 </li>
@@ -206,6 +224,7 @@
             {% endif %}
         </ul>
     </nav>
+    
     <div class="container">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
