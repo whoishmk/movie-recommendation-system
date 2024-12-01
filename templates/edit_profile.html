@@ -1,0 +1,17 @@
+<h1>Edit Profile</h1>
+
+<form action="{{ url_for('edit_profile') }}" method="post" enctype="multipart/form-data">
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" value="{{ user.name }}" required>
+
+    <label for="gender">Gender</label>
+    <select id="gender" name="gender" required>
+        <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+        <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+    </select>
+
+    <label for="profile_pic">Profile Picture</label>
+    <input type="file" id="profile_pic" name="profile_pic" accept="image/*">
+
+    <button type="submit">Save Changes</button>
+</form>

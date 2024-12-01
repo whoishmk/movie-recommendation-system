@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .profile-details {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 20px 0;
+        gap: 20px;
+    }
+
+    .profile-pic-large {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 3px solid #ccc;
+    }
+
+    .profile-info p {
+        margin: 5px 0;
+        font-size: 16px;
+        color: #555;
+    }
+
+    h2 {
+        margin-top: 30px;
+        color: #333;
+    }
+
+    .discussion-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .discussion-item {
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        transition: box-shadow 0.3s;
+    }
+
+    .discussion-item:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .discussion-item a {
+        text-decoration: none;
+        font-weight: bold;
+        color: #007BFF;
+    }
+
+    .discussion-item small {
+        display: block;
+        margin-top: 5px;
+        color: #666;
+        font-size: 12px;
+    }
+</style>
+
+<h1>{{ user.name }}'s Profile</h1>
+
+<div class="profile-details">
+    <img src="{{ url_for('static', filename='uploads/' + user.profile_pic) }}" 
+         alt="Profile Picture" 
+         class="profile-pic-large">
+    <div class="profile-info">
+        <p><strong>Name:</strong> {{ user.name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Gender:</strong> {{ user.gender }}</p>
+    </div>
+</div>
+
+<h2>{{ user.name }}'s Discussions</h2>
+{% if discussions %}
+    <ul class="discussion-list">
+        {% for discussion in discussions %}
+            <li class="discussion-item">
+                <a href="{{ url_for('view_thread', thread_id=discussion.id) }}">{{ discussion.title }}</a>
+                <small>Created on {{ discussion.created_at.strftime('%B %d, %Y %I:%M %p') }}</small>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>This user hasn't created any discussions yet.</p>
+{% endif %}
+{% endblock %}

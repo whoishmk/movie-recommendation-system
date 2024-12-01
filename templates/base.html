@@ -1,11 +1,11 @@
-<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Movie Recommender</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application</title>
     <style>
-        .button {
+               .button {
         display: inline-block;
         background-color: #6200ee;
         color: #ffffff;
@@ -189,57 +189,194 @@
         font-size: 0.8em;
         vertical-align: super;
     }
+    .profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    z-index: 1000;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: black;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f0f0f0;
+}
+
+.profile-dropdown:hover .dropdown-menu {
+    display: block;
+}
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            padding: 10px 20px;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        nav ul li {
+            margin: 0 10px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+
+        nav ul li a:hover {
+            background-color: #575757;
+        }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: black;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            nav ul {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Navbar -->
     <nav>
-        <!-- Existing navigation links -->
         <ul>
-            {% if session.get('loggedin') %}
-                <!-- Other links -->
-                <li>
-                    <a href="{{ url_for('home') }}">Home</a>
-                </li>
-                <li>
-                    <a href="{{ url_for('discussions') }}">Discussions</a>
-                </li>
-                <li>
-                    <a href="{{ url_for('view_notifications') }}">Notifications
-                        {% if notifications|length > 0 %}
-                            <span class="notification-badge">{{ notifications|length }}</span>
-                        {% endif %}
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('logout') }}">Logout</a>
-                </li>
-            {% else %}
-                <!-- Login/Register links -->
-                <li class="{% if request.endpoint == 'login' %}active{% endif %}">
-                    <a href="{{ url_for('login') }}">Login</a>
-                </li>
-                <li class="{% if request.endpoint == 'register' %}active{% endif %}">
-                    <a href="{{ url_for('register') }}">Register</a>
-                </li>
-            {% endif %}
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('discussions') }}">Discussions</a></li>
+            <li><a href="{{ url_for('view_notifications') }}">Notifications</a></li>
         </ul>
+        {% if session.get('loggedin') %}
+        <div class="profile-dropdown">
+            <button class="profile-btn">
+                <img src="{{ url_for('static', filename='uploads/' + session.get('profile_pic', 'default.jpg')) }}" 
+                     alt="Profile Picture" 
+                     class="profile-pic">
+            </button>
+            <div class="dropdown-menu">
+                <a href="{{ url_for('profile') }}">Profile</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        </div>
+        {% else %}
+        <ul>
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('register') }}">Register</a></li>
+        </ul>
+        {% endif %}
     </nav>
-    
-    <div class="container">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
+
+    <!-- Page Content -->
+    <div>
+        {% block content %}
+        {% endblock %}
     </div>
-    <!-- Include JavaScript if needed -->
+
+    <!-- JavaScript for Dropdown -->
     <script>
-        // Your JavaScript code here (if any)
+        document.addEventListener('DOMContentLoaded', function () {
+            const profileBtn = document.querySelector('.profile-btn');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+
+            // Toggle dropdown visibility
+            profileBtn.addEventListener('click', function (event) {
+                event.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
+
+            // Close dropdown if clicked outside
+            document.addEventListener('click', function () {
+                if (dropdownMenu.classList.contains('show')) {
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+        });
     </script>
 </body>
 </html>

@@ -399,8 +399,79 @@ def post_message(thread_id):
     cursor.close()
     return redirect(url_for('view_thread', thread_id=thread_id))
 
+@app.route('/profile')
+@login_required
+def profile():
+    # Fetch user details
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM users WHERE id = %s', (session['id'],))
+    user = cursor.fetchone()
+
+    # Fetch user's discussions
+    cursor.execute('SELECT * FROM threads WHERE user_id = %s ORDER BY created_at DESC', (session['id'],))
+    discussions = cursor.fetchall()
+    cursor.close()
+
+    return render_template('profile.html', user=user, discussions=discussions)
 
 
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    if request.method == 'POST':
+        name = request.form['name']
+        gender = request.form['gender']
+        profile_pic = request.files.get('profile_pic')
+
+        # Handle profile picture upload
+        if profile_pic and allowed_file(profile_pic.filename):
+            filename = secure_filename(profile_pic.filename)
+            profile_pic_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            profile_pic.save(profile_pic_path)
+        else:
+            filename = session['profile_pic']
+
+        # Update user details
+        cursor = mysql.connection.cursor()
+        cursor.execute("""
+            UPDATE users SET name = %s, gender = %s, profile_pic = %s WHERE id = %s
+        """, (name, gender, filename, session['id']))
+        mysql.connection.commit()
+        cursor.close()
+
+        # Update session
+        session['name'] = name
+        session['profile_pic'] = filename
+
+        flash('Profile updated successfully.')
+        return redirect(url_for('profile'))
+
+    # Fetch user details
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM users WHERE id = %s', (session['id'],))
+    user = cursor.fetchone()
+    cursor.close()
+
+    return render_template('edit_profile.html', user=user)
+
+
+@app.route('/user/<int:user_id>')
+def user_profile(user_id):
+    # Fetch user details
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT * FROM users WHERE id = %s', (user_id,))
+    user = cursor.fetchone()
+
+    if not user:
+        flash('User not found.')
+        return redirect(url_for('discussions'))
+
+    # Fetch user's discussions
+    cursor.execute('SELECT * FROM threads WHERE user_id = %s ORDER BY created_at DESC', (user_id,))
+    discussions = cursor.fetchall()
+    cursor.close()
+
+    return render_template('user_profile.html', user=user, discussions=discussions)
 
 
 

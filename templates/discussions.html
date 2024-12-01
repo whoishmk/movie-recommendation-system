@@ -64,9 +64,18 @@
     .button:hover {
         background-color: #3700b3;
     }
+
+    .user-profile-link {
+        color: #bb86fc;
+        text-decoration: none;
+    }
+
+    .user-profile-link:hover {
+        color: #ffffff;
+        text-decoration: underline;
+    }
 </style>
 
-<!-- Create Thread Button -->
 <!-- Create Thread Button -->
 {% if session.get('loggedin') %}
     <a href="{{ url_for('create_thread') }}" class="button">Create New Thread</a>
@@ -95,7 +104,11 @@
             <!-- Thread Metadata -->
             <div class="thread-meta">
                 <small>
-                    Started by {{ thread.name }} on {{ thread.created_at.strftime('%B %d, %Y %I:%M %p') }}
+                    Started by 
+                    <a href="{{ url_for('user_profile', user_id=thread.user_id) }}" class="user-profile-link">
+                        {{ thread.name }}
+                    </a> 
+                    on {{ thread.created_at.strftime('%B %d, %Y %I:%M %p') }}
                     {% if thread.updated_at != thread.created_at %}
                         (Edited {{ thread.updated_at.strftime('%B %d, %Y %I:%M %p') }})
                     {% endif %}
@@ -107,6 +120,4 @@
 {% else %}
     <p>No threads available.</p>
 {% endif %}
-
-
 {% endblock %}
