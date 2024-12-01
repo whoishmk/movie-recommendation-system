@@ -252,15 +252,27 @@ def create_thread():
         title = request.form['title']
         content = request.form['content']
         user_id = session['id']
+
+        # Handle image upload
+        file = request.files.get('image')
+        image_filename = None
+        if file and allowed_file(file.filename):
+            image_filename = secure_filename(file.filename)
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+            file.save(image_path)
+
+        # Insert thread into the database
         cursor = mysql.connection.cursor()
         cursor.execute("""
-            INSERT INTO threads (title, content, user_id)
-            VALUES (%s, %s, %s)
-        """, (title, content, user_id))
+            INSERT INTO threads (title, content, user_id, image)
+            VALUES (%s, %s, %s, %s)
+        """, (title, content, user_id, image_filename))
         mysql.connection.commit()
         cursor.close()
+
         flash('Thread created successfully.')
         return redirect(url_for('discussions'))
+
     return render_template('create_thread.html')
 
 

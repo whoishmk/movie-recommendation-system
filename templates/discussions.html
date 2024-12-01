@@ -67,6 +67,7 @@
 </style>
 
 <!-- Create Thread Button -->
+<!-- Create Thread Button -->
 {% if session.get('loggedin') %}
     <a href="{{ url_for('create_thread') }}" class="button">Create New Thread</a>
 {% endif %}
@@ -76,12 +77,22 @@
     <div class="thread-list">
         {% for thread in threads %}
         <div class="thread-item">
+            <!-- Display Thread Image -->
+            {% if thread.image %}
+                <img src="{{ url_for('static', filename='uploads/' + thread.image) }}" alt="Thread Image" class="thread-image" style="max-width: 100%; height: auto;">
+            {% endif %}
+
+            <!-- Thread Title -->
             <a href="{{ url_for('view_thread', thread_id=thread.id) }}" class="thread-title">
                 {{ thread.title }}
             </a>
+
+            <!-- Thread Content -->
             <div class="thread-content">
                 {{ thread.content[:100] }}... <!-- Show a snippet of the message -->
             </div>
+
+            <!-- Thread Metadata -->
             <div class="thread-meta">
                 <small>
                     Started by {{ thread.name }} on {{ thread.created_at.strftime('%B %d, %Y %I:%M %p') }}
@@ -96,5 +107,6 @@
 {% else %}
     <p>No threads available.</p>
 {% endif %}
+
 
 {% endblock %}
