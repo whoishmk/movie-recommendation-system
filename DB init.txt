@@ -47,3 +47,4 @@ CREATE TABLE notifications (
 );
 ALTER TABLE threads ADD COLUMN image VARCHAR(255) NULL;
 ALTER TABLE threads ADD COLUMN image VARCHAR(255) NULL;
+select * from users;
