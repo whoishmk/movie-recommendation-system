@@ -1,106 +1,175 @@
 {% extends "base.html" %}
-
 {% block content %}
 <style>
-    .profile-details {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 20px 0;
-        gap: 20px;
+    /* General Styles */
+    body {
+        font-family: 'Arial', sans-serif;
+        color: #ffffff;
+        background-color: #1f1f1f;
+        padding: 20px;
     }
 
-    .profile-pic-large {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        border: 3px solid #ccc;
+    h1, h2 {
+        color: #ffffff;
     }
 
-    .profile-info p {
-        margin: 5px 0;
-        font-size: 16px;
-        color: #555;
-    }
-
-    .button {
-        display: block;
-        margin: 20px auto;
-        padding: 10px 20px;
-        background-color: #007BFF;
-        color: white;
+    a {
+        color: #bb86fc;
         text-decoration: none;
+    }
+
+    a:hover {
+        color: #ffffff;
+    }
+
+    /* Profile Container */
+    .profile-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
+        margin: 20px auto;
+    }
+
+    .profile-picture {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 3px solid #333;
+        margin-bottom: 20px;
+    }
+
+    .profile-name {
+        font-size: 1.8em;
+        font-weight: bold;
+    }
+
+    .profile-description {
+        font-size: 1em;
+        color: #cccccc;
+        margin: 10px 0;
+    }
+
+    .insights-button {
+        margin: 20px 0;
+    }
+
+    .insights-button a {
+        background-color: #0077b5;
+        color: #ffffff;
+        padding: 10px 20px;
         border-radius: 5px;
-        transition: background-color 0.3s;
+        font-size: 1em;
+        text-decoration: none;
     }
 
-    .button:hover {
-        background-color: #0056b3;
+    .insights-button a:hover {
+        background-color: #005582;
     }
 
-    h2 {
+    /* Card Section */
+    .card-section {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
         margin-top: 30px;
-        color: #333;
     }
 
-    .discussion-list {
+    .card {
+        background-color: #333;
+        border-radius: 10px;
+        padding: 20px;
+        width: 300px;
+    }
+
+    .card h3 {
+        margin-bottom: 10px;
+    }
+
+    .card ul {
         list-style: none;
         padding: 0;
     }
 
-    .discussion-item {
+    .card ul li {
         margin: 10px 0;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        transition: box-shadow 0.3s;
+        font-size: 1em;
     }
 
-    .discussion-item:hover {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .discussion-item a {
-        text-decoration: none;
+    .card ul li::before {
+        content: '•';
+        color: #bb86fc;
         font-weight: bold;
-        color: #007BFF;
+        display: inline-block;
+        width: 1em;
     }
 
-    .discussion-item small {
-        display: block;
-        margin-top: 5px;
-        color: #666;
-        font-size: 12px;
+    .social-icons {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        gap: 15px;
+    }
+
+    .social-icons a {
+        font-size: 1.5em;
+        color: #bb86fc;
+        transition: color 0.3s ease;
+    }
+
+    .social-icons a:hover {
+        color: #ffffff;
     }
 </style>
 
-<h1>{{ user.name }}'s Profile</h1>
+<div class="profile-container">
+    <!-- Profile Picture -->
+    <img src="{{ url_for('static', filename='uploads/' + user.profile_pic) }}" alt="Profile Picture" class="profile-picture">
 
-<div class="profile-details">
-    <img src="{{ url_for('static', filename='uploads/' + user.profile_pic) }}" 
-         alt="Profile Picture" 
-         class="profile-pic-large">
-    <div class="profile-info">
-        <p><strong>Name:</strong> {{ user.name }}</p>
-        <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>Gender:</strong> {{ user.gender }}</p>
+    <!-- Name and Description -->
+    <div class="profile-name">{{ user.name }}</div>
+    <div class="profile-description">
+        Student at {{ user.institution }} <br>
+        <a href="{{ user.institution_url }}">{{ user.institution_name }}</a>
+    </div>
+
+    <!-- Biography -->
+    <h2>Biography</h2>
+    <p class="profile-description">
+        Hi! I’m {{ user.name }}. <br>
+        I'm creative, curious, positive, and a fast learner.
+    </p>
+
+    <!-- Insights Button -->
+    <div class="insights-button">
+        <a href="{{ url_for('insights', user_id=user.id) }}" target="_blank">View Insights</a>
+    </div>
+
+    <!-- Social Icons -->
+    <div class="social-icons">
+        <a href="mailto:{{ user.email }}"><i class="fa fa-envelope"></i></a>
+        <a href="{{ user.twitter_url }}" target="_blank"><i class="fa fa-twitter"></i></a>
+        <a href="{{ user.linkedin_url }}" target="_blank"><i class="fa fa-linkedin"></i></a>
     </div>
 </div>
 
-<a href="{{ url_for('edit_profile') }}" class="button">Edit Profile</a>
-
-<h2>Your Discussions</h2>
-{% if discussions %}
-    <ul class="discussion-list">
-        {% for discussion in discussions %}
-            <li class="discussion-item">
-                <a href="{{ url_for('view_thread', thread_id=discussion.id) }}">{{ discussion.title }}</a>
-                <small>Created on {{ discussion.created_at.strftime('%B %d, %Y %I:%M %p') }}</small>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>You haven't created any discussions yet.</p>
-{% endif %}
+<!-- Interests and Watchlist Cards -->
+<div class="card-section">
+    <div class="card">
+        <h3>Interests</h3>
+        <ul>
+            <li>ICT</li>
+            <li>Coding</li>
+            <li>E-sports</li>
+        </ul>
+    </div>
+    <div class="card">
+        <h3>Watchlist</h3>
+        <ul>
+            <li>The Matrix</li>
+            <li>Inception</li>
+            <li>Breaking Bad</li>
+        </ul>
+    </div>
+</div>
 {% endblock %}

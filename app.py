@@ -474,6 +474,11 @@ def user_profile(user_id):
     return render_template('user_profile.html', user=user, discussions=discussions)
 
 
+@app.route('/insights/<int:user_id>')
+def insights(user_id):
+    # Add logic to fetch user-specific insights or analytics
+    user_insights = {"activity": "Very Active", "threads_created": 10}  # Example data
+    return render_template('insights.html', insights=user_insights)
 
 
 
