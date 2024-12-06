@@ -48,3 +48,18 @@ CREATE TABLE notifications (
 ALTER TABLE threads ADD COLUMN image VARCHAR(255) NULL;
 ALTER TABLE threads ADD COLUMN image VARCHAR(255) NULL;
 select * from users;
+
+
+// table for movies 
+CREATE TABLE movies (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    movie_title VARCHAR(255) NOT NULL,
+    genre VARCHAR(100),
+    description TEXT,
+    director VARCHAR(100),
+    actors TEXT,
+    release_year INT,
+    rating FLOAT,
+    mood VARCHAR(50),
+    runtime INT
+);
