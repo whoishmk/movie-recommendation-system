@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import os
 from werkzeug.utils import secure_filename
 import MySQLdb.cursors
+import random
 from datetime import datetime
 
 app = Flask(__name__)
@@ -25,6 +26,14 @@ app.config['MYSQL_PASSWORD'] = 'admin'   # Replace with your MySQL password
 app.config['MYSQL_DB'] = 'movie_recommender'
 
 mysql = MySQL(app)
+
+
+def get_random_movie():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT * FROM movies ORDER BY RAND() LIMIT 1")
+    movie = cursor.fetchone()
+    cursor.close()
+    return movie
 
 # Check if file extension is allowed
 def allowed_file(filename):
@@ -497,6 +506,80 @@ def search():
     cursor.close()
 
     return render_template('search_results.html', query=query, results=results)
+
+
+@app.route('/chatbot', methods=['POST'])
+def chatbot():
+    user_message = request.json.get("message", "").lower()
+
+    # Random greetings
+    greetings = [
+        "Hi there! 🎥 How can I assist you today?",
+        "Hello! 👋 Ready for some movie recommendations?",
+        "Hey! Let's find your next favorite movie! 🍿"
+    ]
+
+    # Response for greetings
+    if any(word in user_message for word in ["hello", "hi", "hey"]):
+        response = random.choice(greetings)
+
+    # Movie recommendation
+    elif "recommend" in user_message or "suggest" in user_message:
+        movie = get_random_movie()
+        if movie:
+            responses = [
+                f"I recommend '{movie['movie_title']}' ({movie['release_year']}). It's a {movie['genre']} movie with a rating of {movie['rating']}.",
+                f"How about '{movie['movie_title']}'? It's a fantastic {movie['genre']} movie released in {movie['release_year']}.",
+                f"'{movie['movie_title']}' ({movie['release_year']}) is a great choice. Genre: {movie['genre']}, Rating: {movie['rating']}."
+            ]
+            response = random.choice(responses)
+        else:
+            response = "I couldn't find a movie to recommend. Try again later!"
+
+    # Mood-based recommendation
+    elif any(mood in user_message for mood in ["happy", "sad", "excited", "relaxed"]):
+        mood = next(mood for mood in ["happy", "sad", "excited", "relaxed"] if mood in user_message)
+        movie = suggest_movie_by_mood(mood)
+        if movie:
+            responses = [
+                f"Feeling {mood}? Watch '{movie['movie_title']}' ({movie['release_year']}). It's a {movie['genre']} movie with a rating of {movie['rating']}.",
+                f"'{movie['movie_title']}' is perfect for when you're {mood}. Genre: {movie['genre']}, Rating: {movie['rating']}."
+            ]
+            response = random.choice(responses)
+        else:
+            response = f"Sorry, I couldn't find any {mood} movies right now."
+
+    # Fun response for "bored"
+    elif "bored" in user_message:
+        response = "Bored? 🥱 How about an action-packed thriller or a laugh-out-loud comedy? Ask me for a suggestion!"
+
+    # Unknown input
+    else:
+        fallback_responses = [
+            "Hmm, I didn't quite get that. Could you ask me about movies?",
+            "I'm not sure how to respond to that. Try asking for a recommendation!",
+            "Let's talk movies! 🎬 Ask me for a suggestion or tell me how you're feeling."
+        ]
+        response = random.choice(fallback_responses)
+
+    return jsonify({"response": response})
+
+# Helper function for mood-based recommendations
+def suggest_movie_by_mood(mood):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT * FROM movies WHERE mood = %s ORDER BY RAND() LIMIT 1", (mood,))
+    movie = cursor.fetchone()
+    cursor.close()
+
+    if movie:
+        return {
+            "movie_title": movie['movie_title'],
+            "release_year": movie['release_year'],
+            "genre": movie['genre'],
+            "rating": movie['rating']
+        }
+    return None
+
 
 
 
