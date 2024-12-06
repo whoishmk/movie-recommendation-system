@@ -480,6 +480,23 @@ def insights(user_id):
     user_insights = {"activity": "Very Active", "threads_created": 10}  # Example data
     return render_template('insights.html', insights=user_insights)
 
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query', '').strip()
+    if not query:
+        flash("Please enter a search query!", "warning")
+        return redirect(url_for('home'))
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("""
+        SELECT * FROM movies WHERE    # Add your search query here
+        movie_name LIKE %s OR 
+        movie_description LIKE %s
+    """, (f"%{query}%", f"%{query}%"))
+    results = cursor.fetchall()
+    cursor.close()
+
+    return render_template('search_results.html', query=query, results=results)
 
 
 

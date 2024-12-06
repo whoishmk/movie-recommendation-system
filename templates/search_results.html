@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Search Results for "{{ query }}"</h2>
+    {% if results %}
+    <ul>
+        {% for movie in results %}
+        <li>
+            <a href="{{ url_for('movie_details', movie_id=movie[0]) }}" class="thread-title">
+                {{ movie[1] }} <!-- Assuming movie[1] is the movie name -->
+            </a>
+            <p class="thread-meta">{{ movie[2] }} <!-- Optional: Additional details like description or rating --></p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No results found for "{{ query }}".</p>
+    {% endif %}
+</div>
+{% endblock %}
