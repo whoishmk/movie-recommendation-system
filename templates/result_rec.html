@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendations</title>
+</head>
+<body>
+    <h1>Recommendations for "{{ movie_name }}"</h1>
+    <h2>Collaborative Filtering:</h2>
+    <ul>
+        {% for movie_id in similar_movies %}
+        <li>{{ movie_titles[movie_id] }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Content-Based Recommendations:</h2>
+    <ul>
+        {% for movie in content_based %}
+        <li>{{ movie }}</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Search Again</a>
+</body>
+</html>

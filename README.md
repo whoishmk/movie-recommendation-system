@@ -95,6 +95,8 @@ Authentication
 
 File Structure
 
+    Copy the precomputed_data.pkl file to the project directory.
+
 project-directory/
 ├── app.py              # Main Flask application
 ├── config.py           # Configuration file for database credentials

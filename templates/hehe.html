@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Books</title>
+</head>
+<body>
+    <h1>Get Book</h1>
+    <form method="get">
+        <label for="bookid">Book ID:</label>
+        <input type="text" id="bookid" name="bookid">
+        <input type="button" value="Get Book" onclick="checkBookId()">
+    </form>
+
+    <script>
+        function checkBookId() {
+            var textbox = document.getElementById('bookid');
+            var bookid = textbox.value;
+            var pattern = /^[0-9]+$/;
+            if (pattern.test(bookid)) {
+                alert("Valid Input");
+            } else {
+                alert("Invalid input");
+            }
+        }
+        
+        function ajaxgetcall(bookid)
+        url = "/Valid"
+    </script>
+</body>
+</html>

@@ -1,325 +1,64 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Welcome to Movie Recommender!</h2>
-
-<style>
-    /* Netflix-Style Layout */
-    .movie-sections {
-        margin: 20px 0;
-    }
-
-    .movie-row {
-        margin-bottom: 40px;
-        position: relative;
-    }
-
-    .movie-row h3 {
-        font-size: 2em;
-        margin-left: 10px;
-        color: #ffffff;
-    }
-
-    .movie-posters {
-        display: flex;
-        overflow: hidden;
-        padding: 10px;
-        gap: 20px;
-        scroll-behavior: smooth;
-    }
-
-    .movie-poster {
-        flex: 0 0 auto;
-        width: 350px; /* Increased width for bigger posters */
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-
-    .movie-poster img {
-        width: 100%;
-        height: auto;
-        border-radius: 10px;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .movie-poster:hover img {
-        transform: scale(1.1);
-        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5);
-    }
-
-    .movie-title {
-        margin-top: 5px;
-        text-align: center;
-        font-size: 1.2em; /* Slightly larger title font */
-        color: #cccccc;
-    }
-
-    .scroll-button {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background-color: rgba(0, 0, 0, 0.5);
-        color: #ffffff;
-        border: none;
-        padding: 15px;
-        font-size: 2em;
-        cursor: pointer;
-        border-radius: 50%;
-        z-index: 10;
-    }
-
-    .scroll-button.left {
-        left: 10px;
-    }
-
-    .scroll-button.right {
-        right: 10px;
-    }
-
-    .scroll-button:hover {
-        background-color: rgba(0, 0, 0, 0.8);
-    }
-
-    @media (max-width: 768px) {
-        .movie-poster {
-            width: 200px; /* Smaller posters for mobile screens */
-        }
-    }
-
-    /* Chatbot Styles */
-    .chatbot-container {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 300px;
-        background-color: #333;
-        border-radius: 10px;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-        color: white;
-        font-family: Arial, sans-serif;
-        z-index: 1000;
-    }
-
-    .chat-header {
-        background-color: #6200ee;
-        padding: 10px;
-        border-radius: 10px 10px 0 0;
-        text-align: center;
-        font-weight: bold;
-    }
-
-    .chat-messages {
-        max-height: 300px;
-        overflow-y: auto;
-        padding: 10px;
-        font-size: 14px;
-    }
-
-    .chat-messages .user-message {
-        text-align: right;
-        margin: 5px;
-        color: #00e676;
-    }
-
-    .chat-messages .bot-message {
-        text-align: left;
-        margin: 5px;
-        color: #ff9100;
-    }
-
-    .chat-input {
-        display: flex;
-        padding: 10px;
-        background-color: #222;
-        border-radius: 0 0 10px 10px;
-    }
-
-    .chat-input input {
-        flex: 1;
-        padding: 8px;
-        border: none;
-        border-radius: 5px;
-    }
-
-    .chat-input button {
-        background-color: #6200ee;
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        margin-left: 5px;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    .chat-input button:hover {
-        background-color: #3700b3;
-    }
-    /* Chatbot */
-.chatbot-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 300px;
-    background-color: #333;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-    color: white;
-    font-family: Arial, sans-serif;
-    z-index: 1000;
-}
-
-.chat-header {
-    background-color: #6200ee;
-    padding: 10px;
-    border-radius: 10px 10px 0 0;
-    text-align: center;
-    font-weight: bold;
-}
-
-.chat-messages {
-    max-height: 300px;
-    overflow-y: auto;
-    padding: 10px;
-    font-size: 14px;
-}
-
-.chat-messages .message {
-    margin: 5px 0;
-}
-
-.chat-messages .bot-message {
-    display: flex;
-    align-items: center;
-    color: #11ff00;
-}
-
-.chat-messages .user-message {
-    text-align: right;
-    color: #ffd900;
-}
-
-.chat-messages .avatar {
-    width: 30px;
-    height: 30px;
-    margin-right: 10px;
-    border-radius: 50%;
-    background-color: #fff;
-}
-
-.chat-input {
-    display: flex;
-    padding: 10px;
-    background-color: #222;
-    border-radius: 0 0 10px 10px;
-}
-
-.chat-input input {
-    flex: 1;
-    padding: 8px;
-    border: none;
-    border-radius: 5px;
-}
-
-.chat-input button {
-    background-color: #6200ee;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    margin-left: 5px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.chat-input button:hover {
-    background-color: #3700b3;
-}
-
-</style>
-
-<div class="movie-sections">
-    <div class="movie-row">
-        <h3>Trending</h3>
-        <button class="scroll-button left" onclick="scrollRow(this, -1)">&#8249;</button>
-        <div class="movie-posters">
-            <div class="movie-poster">
-                <img src="https://via.placeholder.com/350x500" alt="Placeholder Movie">
-                <div class="movie-title">Placeholder Movie 1</div>
+<div class="container my-5">
+    <!-- Carousel Section -->
+    <div id="mainCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for image in carousel_images %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <img src="{{ image }}" class="d-block w-100 rounded" alt="Carousel Image">
             </div>
-            <div class="movie-poster">
-                <img src="https://via.placeholder.com/350x500" alt="Placeholder Movie">
-                <div class="movie-title">Placeholder Movie 2</div>
-            </div>
-            <div class="movie-poster">
-                <img src="https://via.placeholder.com/350x500" alt="Placeholder Movie">
-                <div class="movie-title">Placeholder Movie 3</div>
-            </div>
-            <div class="movie-poster">
-                <img src="https://via.placeholder.com/350x500" alt="Placeholder Movie">
-                <div class="movie-title">Placeholder Movie 4</div>
-            </div>
-            <div class="movie-poster">
-                <img src="https://via.placeholder.com/350x500" alt="Placeholder Movie">
-                <div class="movie-title">Placeholder Movie 5</div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <!-- Search Bar -->
+    <form method="POST" id="searchForm">
+        <div class="input-group mb-4">
+            <input type="text" name="movie" class="form-control" placeholder="Search for a movie..." value="{{ movie_name }}" aria-label="Search for a movie">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+
+    <!-- Recommendations Section -->
+    <h2>Recommendations for "{{ movie_name }}"</h2>
+
+    <!-- Collaborative Filtering -->
+    <h3 class="mt-5">People who watched {{ movie_name }} also watched:</h3>
+    <div class="poster-grid row">
+        {% for poster in cf_posters %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <img src="{{ poster }}" class="card-img-top rounded" alt="Collaborative Filtering Poster">
+                <div class="card-body">
+                    <p class="card-text text-center">Collaborative Recommendation</p>
+                </div>
             </div>
         </div>
-        <button class="scroll-button right" onclick="scrollRow(this, 1)">&#8250;</button>
+        {% endfor %}
+    </div>
+
+    <!-- Content-Based Filtering -->
+    <h3 class="mt-5">Movies Similar to {{ movie_name }}:</h3>
+    <div class="poster-grid row">
+        {% for poster in cb_posters %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <img src="{{ poster }}" class="card-img-top rounded" alt="Content-Based Movie Poster">
+                <div class="card-body">
+                    <p class="card-text text-center">Content-Based Recommendation</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
-
-<!-- Chatbot -->
-<div class="chatbot-container">
-    <div class="chat-header">Movie Chatbot</div>
-    <div class="chat-messages" id="chat-messages">
-        <!-- Chat messages will be appended dynamically -->
-    </div>
-    <div class="chat-input">
-        <input type="text" id="user-message" placeholder="Ask me about movies..." />
-        <button onclick="sendMessage()">Send</button>
-    </div>
-</div>
-
-<script>
-    function scrollRow(button, direction) {
-        const row = button.parentElement.querySelector('.movie-posters');
-        const scrollAmount = 350; // Adjusted to match the poster width
-        row.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
-    }
-
-    function sendMessage() {
-        const userMessage = document.getElementById('user-message').value;
-        if (userMessage.trim() === '') return;
-
-        // Display the user's message
-        const chatMessages = document.getElementById('chat-messages');
-        const userMessageElement = document.createElement('div');
-        userMessageElement.className = 'user-message';
-        userMessageElement.innerText = userMessage;
-        chatMessages.appendChild(userMessageElement);
-
-        // Clear the input
-        document.getElementById('user-message').value = '';
-
-        // Send the message to the backend
-        fetch('/chatbot', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message: userMessage }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                // Display the bot's response
-                const botMessageElement = document.createElement('div');
-                botMessageElement.className = 'bot-message';
-                botMessageElement.innerText = data.response;
-                chatMessages.appendChild(botMessageElement);
-
-                // Scroll to the bottom of the chat
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
-</script>
 {% endblock %}
