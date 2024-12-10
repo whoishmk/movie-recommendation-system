@@ -31,6 +31,21 @@
     <!-- Recommendations Section -->
     <h2>Recommendations for "{{ movie_name }}"</h2>
 
+    <!-- Content-Based Filtering -->
+    <h3 class="mt-5">Movies Similar to {{ movie_name }}:</h3>
+    <div class="poster-grid row">
+        {% for poster in cb_posters %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <img src="{{ poster }}" class="card-img-top rounded" alt="Content-Based Movie Poster">
+                <div class="card-body">
+                    <p class="card-text text-center">Content-Based Recommendation</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
     <!-- Collaborative Filtering -->
     <h3 class="mt-5">People who watched {{ movie_name }} also watched:</h3>
     <div class="poster-grid row">
@@ -46,19 +61,6 @@
         {% endfor %}
     </div>
 
-    <!-- Content-Based Filtering -->
-    <h3 class="mt-5">Movies Similar to {{ movie_name }}:</h3>
-    <div class="poster-grid row">
-        {% for poster in cb_posters %}
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm">
-                <img src="{{ poster }}" class="card-img-top rounded" alt="Content-Based Movie Poster">
-                <div class="card-body">
-                    <p class="card-text text-center">Content-Based Recommendation</p>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
+    
 </div>
 {% endblock %}

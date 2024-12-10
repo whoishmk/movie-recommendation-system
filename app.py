@@ -11,7 +11,6 @@ import pickle
 import pandas as pd
 import numpy as np
 import requests
-import mysql.connector as mconn
 from sentence_transformers import SentenceTransformer
 import torch
 from sklearn.neighbors import NearestNeighbors
@@ -59,11 +58,16 @@ db_config = {
 }
 
 def load_data_from_db(table_name):
-    conn = mconn.connect(**db_config)
-    query = f"SELECT * FROM {table_name}"
-    data = pd.read_sql(query, conn)
-    conn.close()
-    return data
+    with app.app_context():
+        cursor = mysql.connection.cursor()
+        query = f"SELECT * FROM {table_name}"
+        cursor.execute(query)
+        data = cursor.fetchall()  # Fetch all rows as a list of tuples
+        column_names = [desc[0] for desc in cursor.description]  # Get column names
+        cursor.close()
+        # Convert to a list of dictionaries for easier manipulation
+        df = pd.DataFrame(data, columns=column_names)
+        return df
 
 # Load data from database using mysql.connector
 links = load_data_from_db("links")
@@ -256,7 +260,7 @@ def home():
 
     # Integrate recommendation logic from script 2 here
     # Using a default movie for demonstration, e.g. "Toy Story (1995)"
-    user_input = "bodies"
+    user_input = "Toy Story (1995)"
     movie_name = movie_finder(user_input)
     movie_id = next((movies['movieId'][i] for i, title in enumerate(movies['title']) if title == movie_name), None)
  
