@@ -29,7 +29,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 # MySQL configuration for flask_mysqldb
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'       # Replace with your MySQL username
-app.config['MYSQL_PASSWORD'] = 'password'   # Replace with your MySQL password
+app.config['MYSQL_PASSWORD'] = 'admin'   # Replace with your MySQL password
 app.config['MYSQL_DB'] = 'movie_recommender'
 
 mysql = MySQL(app)
@@ -54,7 +54,7 @@ movie_inv_mapper = data['movie_inv_mapper']
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'password',
+    'password': 'admin',
     'database': 'movie_recommender'
 }
 
@@ -181,17 +181,24 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
-        gender = request.form['gender']
+        name = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        gender = request.form.get('gender')
+        biography = request.form.get('biography', '')
+        hobbies = request.form.get('hobbies', '')
+        movie_interests = request.form.get('movie_interests', '')
         file = request.files.get('profile_pic')
 
+        # Validation check
         if not name or not email or not password or not gender:
-            flash('Please fill out all fields.')
+            flash('Please fill out all required fields.')
             return redirect(url_for('register'))
 
+        # Hash the password
         password_hash = generate_password_hash(password)
+
+        # Check if account already exists
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
         account = cursor.fetchone()
@@ -200,6 +207,7 @@ def register():
             cursor.close()
             return redirect(url_for('register'))
 
+        # Save profile picture
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             filename = f"{email}_{filename}"
@@ -208,15 +216,18 @@ def register():
         else:
             filename = 'default.jpg'
 
+        # Insert into database including new fields
         cursor.execute('''
-            INSERT INTO users (name, email, password_hash, gender, profile_pic)
-            VALUES (%s, %s, %s, %s, %s)
-        ''', (name, email, password_hash, gender, filename))
+            INSERT INTO users (name, email, password_hash, gender, profile_pic, biography, hobbies, movie_interests)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        ''', (name, email, password_hash, gender, filename, biography, hobbies, movie_interests))
         mysql.connection.commit()
         cursor.close()
+
         flash('You have successfully registered! Please log in.')
         return redirect(url_for('login'))
     return render_template('register.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
