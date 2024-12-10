@@ -1,0 +1,176 @@
+/* General Dark Mode Styles */
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+/* Navbar Styles */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1f1f1f;
+    padding: 10px 20px;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+nav ul li {
+    margin: 0 10px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #e0e0e0;
+    padding: 5px 10px;
+    border-radius: 3px;
+    transition: background-color 0.3s;
+}
+
+nav ul li a:hover {
+    background-color: #333333;
+}
+
+nav form {
+    display: flex;
+    align-items: center;
+}
+
+nav form input[type="text"] {
+    padding: 5px;
+    border-radius: 4px;
+    border: none;
+    margin-right: 5px;
+    width: 300px;
+    background-color: #2c2c2c;
+    color: #e0e0e0;
+}
+
+nav form input[type="text"]::placeholder {
+    color: #a0a0a0;
+}
+
+nav form button {
+    padding: 5px 10px;
+    background-color: #6200ee;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+nav form button:hover {
+    background-color: #3700b3;
+}
+
+/* Profile Dropdown Styles */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #e0e0e0;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #2c2c2c;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #e0e0e0;
+    transition: background-color 0.3s;
+}
+
+.dropdown-menu a:hover {
+    background-color: #333333;
+}
+
+/* Netflix-Style Movie Posters */
+.netflix-style-posters {
+    display: flex; /* Align items in a row */
+    gap: 15px; /* Add spacing between posters */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    padding: 10px 0;
+    scroll-behavior: smooth; /* Smooth scrolling effect */
+    flex-wrap: nowrap; /* Prevent wrapping */
+}
+
+.poster-item {
+    flex: 0 0 auto; /* Prevent items from shrinking */
+    transition: transform 0.3s ease-in-out; /* Smooth magnification effect */
+    position: relative;
+}
+
+.poster-item:hover {
+    transform: scale(1.2); /* Magnify the poster on hover */
+    z-index: 10; /* Bring the poster to the front */
+}
+
+.poster-image {
+    width: 150px; /* Set poster width */
+    height: 225px; /* Set poster height */
+    object-fit: fit; /* Ensure the poster covers the area without distortion */
+    border-radius: 8px; /* Add rounded corners */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Add a slight shadow for depth */
+}
+
+/* Remove gap between navbar and carousel */
+.carousel {
+    margin-top: 0;
+}
+
+/* Optional: Hide scrollbar for cleaner look */
+.netflix-style-posters::-webkit-scrollbar {
+    display: none;
+}
+.netflix-style-posters {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .poster-image {
+        width: 120px;
+        height: 180px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .poster-image {
+        width: 180px;
+        height: 270px;
+    }
+}
