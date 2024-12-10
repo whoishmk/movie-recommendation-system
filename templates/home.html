@@ -1,12 +1,79 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container my-5">
+
+<!-- Inline CSS (Consider moving to external CSS for better maintainability) -->
+<style>
+    .carousel-image {
+        height: 750px; /* Adjust the height as needed */
+        object-fit: cover; /* Ensures the image covers the entire area without distortion */
+        object-position: center; /* Centers the image */
+    }
+
+    /* Netflix-Style Movie Posters */
+    .netflix-style-posters {
+        display: flex; /* Align items in a row */
+        gap: 15px; /* Add spacing between posters */
+        overflow-x: auto; /* Enable horizontal scrolling */
+        padding: 10px 0;
+        scroll-behavior: smooth; /* Smooth scrolling effect */
+    }
+
+    .poster-item {
+        flex: 0 0 auto; /* Prevent items from shrinking */
+        transition: transform 0.3s ease-in-out; /* Smooth magnification effect */
+        position: relative;
+    }
+
+    .poster-item:hover {
+        transform: scale(1.2); /* Magnify the poster on hover */
+        z-index: 10; /* Bring the poster to the front */
+    }
+
+    .poster-image {
+        width: 150px; /* Set poster width */
+        height: 225px; /* Set poster height */
+        object-fit: cover; /* Ensure the poster covers the area without distortion */
+        border-radius: 8px; /* Add rounded corners */
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Add a slight shadow for depth */
+    }
+
+    /* Remove gap between navbar and carousel */
+    .carousel {
+        margin-top: 0;
+    }
+
+    /* Optional: Hide scrollbar for cleaner look */
+    .netflix-style-posters::-webkit-scrollbar {
+        display: none;
+    }
+    .netflix-style-posters {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .poster-image {
+            width: 120px;
+            height: 180px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .poster-image {
+            width: 180px;
+            height: 270px;
+        }
+    }
+</style>
+
+<div class="container-fluid p-0 mb-0">
     <!-- Carousel Section -->
-    <div id="mainCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+    <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             {% for image in carousel_images %}
             <div class="carousel-item {% if loop.first %}active{% endif %}">
-                <img src="{{ image }}" class="d-block w-100 rounded" alt="Carousel Image">
+                <img src="{{ image }}" class="d-block w-100 carousel-image" alt="Carousel Image">
             </div>
             {% endfor %}
         </div>
@@ -19,48 +86,37 @@
             <span class="visually-hidden">Next</span>
         </button>
     </div>
-
-    <!-- Search Bar -->
-    <form method="POST" id="searchForm">
-        <div class="input-group mb-4">
-            <input type="text" name="movie" class="form-control" placeholder="Search for a movie..." value="{{ movie_name }}" aria-label="Search for a movie">
-            <button class="btn btn-primary" type="submit">Search</button>
-        </div>
-    </form>
-
-    <!-- Recommendations Section -->
-    <h2>Recommendations for "{{ movie_name }}"</h2>
-
-    <!-- Content-Based Filtering -->
-    <h3 class="mt-5">Movies Similar to {{ movie_name }}:</h3>
-    <div class="poster-grid row">
-        {% for poster in cb_posters %}
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm">
-                <img src="{{ poster }}" class="card-img-top rounded" alt="Content-Based Movie Poster">
-                <div class="card-body">
-                    <p class="card-text text-center">Content-Based Recommendation</p>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-
-    <!-- Collaborative Filtering -->
-    <h3 class="mt-5">People who watched {{ movie_name }} also watched:</h3>
-    <div class="poster-grid row">
-        {% for poster in cf_posters %}
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm">
-                <img src="{{ poster }}" class="card-img-top rounded" alt="Collaborative Filtering Poster">
-                <div class="card-body">
-                    <p class="card-text text-center">Collaborative Recommendation</p>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-
-    
 </div>
+
+<!-- Search Bar -->
+<form method="POST" id="searchForm">
+    <div class="input-group mb-4">
+        <input type="text" name="movie" class="form-control" placeholder="Search for a movie..." value="{{ movie_name }}" aria-label="Search for a movie">
+        <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+</form>
+
+<!-- Recommendations Section -->
+<h2 data-aos="fade-up">Recommendations for "{{ movie_name }}"</h2>
+
+<!-- Content-Based Filtering -->
+<h3 class="mt-5" data-aos="fade-up">Movies Similar to {{ movie_name }}:</h3>
+<div class="netflix-style-posters" data-aos="fade-up">
+    {% for poster in cb_posters %}
+    <div class="poster-item">
+        <img src="{{ poster }}" class="poster-image" alt="Content-Based Movie Poster">
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Collaborative Filtering -->
+<h3 class="mt-5" data-aos="fade-up">People who watched {{ movie_name }} also watched:</h3>
+<div class="netflix-style-posters" data-aos="fade-up">
+    {% for poster in cf_posters %}
+    <div class="poster-item">
+        <img src="{{ poster }}" class="poster-image" alt="Collaborative Filtering Poster">
+    </div>
+    {% endfor %}
+</div>
+
 {% endblock %}

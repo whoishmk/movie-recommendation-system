@@ -28,7 +28,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 # MySQL configuration for flask_mysqldb
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'       # Replace with your MySQL username
-app.config['MYSQL_PASSWORD'] = 'admin'   # Replace with your MySQL password
+app.config['MYSQL_PASSWORD'] = 'password'   # Replace with your MySQL password
 app.config['MYSQL_DB'] = 'movie_recommender'
 
 mysql = MySQL(app)
@@ -53,7 +53,7 @@ movie_inv_mapper = data['movie_inv_mapper']
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'admin',
+    'password': 'password',
     'database': 'movie_recommender'
 }
 
@@ -205,7 +205,7 @@ def register():
         # Check if account already exists
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
-        account = cursor.fetchone()
+        account = cursor.fetchone() 
         if account:
             flash('Account already exists with this email.')
             cursor.close()
@@ -259,7 +259,7 @@ def login():
             flash('Account not found.')
     return render_template('login.html')
  
-@app.route('/home')
+@app.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
     # Fetch user's profile pic
@@ -269,25 +269,42 @@ def home():
     cursor.close()
     profile_pic = account['profile_pic'] if account else 'default.jpg'
 
-    # Integrate recommendation logic from script 2 here
-    # Using a default movie for demonstration, e.g. "Toy Story (1995)"
-    user_input = "The Avengers"
-    movie_name = movie_finder(user_input)
-    movie_id = next((movies['movieId'][i] for i, title in enumerate(movies['title']) if title == movie_name), None)
- 
-    # Collaborative Filtering recommendations
-    similar_movies = find_similar_movies(movie_id, k=10)
-    cf_tmdb_ids = links[links['movieId'].isin(similar_movies)]['tmdbId'].tolist()
-    cf_posters = get_movie_posters(cf_tmdb_ids)
+    # Handle user input from the form
+    if request.method == 'POST':
+        user_input = request.form.get('movie', '').strip()
+        if not user_input:
+            user_input = "Toy Story (1995)"
+    else:
+        user_input = "Toy Story (1995)"  # Default movie
 
-    # Content-Based Filtering recommendations
-    movie_index = movies[movies['movieId'] == movie_id].index[0]
-    content_similarities = list(enumerate(cosine_sim[movie_index]))
-    content_similarities = sorted(content_similarities, key=lambda x: x[1], reverse=True)[1:11]
-    cb_movie_ids = [movies.iloc[i[0]]['movieId'] for i in content_similarities]
-    cb_tmdb_ids = links[links['movieId'].isin(cb_movie_ids)]['tmdbId'].tolist()
-    cb_posters = get_movie_posters(cb_tmdb_ids)
+    # Integrate recommendation logic
+    try:
+        # Find the movie name best matching the user input
+        movie_name = movie_finder(user_input)
+        
+        # Match the movie_name to get movie_id from the movies DataFrame
+        movie_id = next((movies['movieId'][i] for i, title in enumerate(movies['title']) if title == movie_name), None)
 
+        # Collaborative Filtering recommendations
+        similar_movies = find_similar_movies(movie_id, k=10)
+        cf_tmdb_ids = links[links['movieId'].isin(similar_movies)]['tmdbId'].tolist()
+        cf_posters = get_movie_posters(cf_tmdb_ids)
+
+        # Content-Based Filtering recommendations
+        movie_index = movies[movies['movieId'] == movie_id].index[0]
+        content_similarities = list(enumerate(cosine_sim[movie_index]))
+        content_similarities = sorted(content_similarities, key=lambda x: x[1], reverse=True)[1:11]
+        cb_movie_ids = [movies.iloc[i[0]]['movieId'] for i in content_similarities]
+        cb_tmdb_ids = links[links['movieId'].isin(cb_movie_ids)]['tmdbId'].tolist()
+        cb_posters = get_movie_posters(cb_tmdb_ids)
+
+    except Exception as e:
+        movie_name = user_input
+        cf_posters = []
+        cb_posters = []
+        flash(f"No recommendations found for '{user_input}'. Error: {e}", "danger")
+
+    # Fetch carousel images
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute('SELECT image_path FROM carousel')
     carousel_images = [row['image_path'] for row in cursor.fetchall()]
@@ -299,6 +316,7 @@ def home():
                            cf_posters=cf_posters,
                            cb_posters=cb_posters,
                            carousel_images=carousel_images)
+
 
 @app.route('/logout')
 def logout():
