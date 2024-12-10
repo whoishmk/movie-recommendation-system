@@ -271,7 +271,7 @@ def home():
 
     # Integrate recommendation logic from script 2 here
     # Using a default movie for demonstration, e.g. "Toy Story (1995)"
-    user_input = "Toy Story (1995)"
+    user_input = "The Avengers"
     movie_name = movie_finder(user_input)
     movie_id = next((movies['movieId'][i] for i, title in enumerate(movies['title']) if title == movie_name), None)
  
