@@ -28,7 +28,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 # MySQL configuration for flask_mysqldb
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'       # Replace with your MySQL username
-app.config['MYSQL_PASSWORD'] = 'password'   # Replace with your MySQL password
+app.config['MYSQL_PASSWORD'] = 'admin'   # Replace with your MySQL password
 app.config['MYSQL_DB'] = 'movie_recommender'
 
 mysql = MySQL(app)
@@ -53,7 +53,7 @@ movie_inv_mapper = data['movie_inv_mapper']
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'password',
+    'password': 'admin',
     'database': 'movie_recommender'
 }
 

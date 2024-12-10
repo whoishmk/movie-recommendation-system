@@ -1,114 +1,164 @@
-{% extends "base.html" %}
-{% block content %}
-<h2>Discussion Threads</h2>
+<!DOCTYPE html>
+<html lang="en">
 
-<style>
-    /* Container for discussion threads */
-    .thread-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-        padding: 20px;
-    }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussion Threads</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Raleway:400,700');
 
-    /* Individual thread item (square box) */
-    .thread-item {
-        background-color: #1f1f1f;
-        border: 1px solid #333;
-        border-radius: 10px;
-        padding: 15px;
-        transition: transform 0.2s, box-shadow 0.2s;
-        cursor: pointer;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Raleway', sans-serif;
+        }
 
-    .thread-item:hover {
-        transform: scale(1.03);
-        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5);
-    }
+        body {
+            background: linear-gradient(90deg, #1E1E2F, #151B54);
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
 
-    .thread-title {
-        font-size: 1.2em;
-        font-weight: bold;
-        margin-bottom: 10px;
-        color: #bb86fc;
-        text-decoration: none;
-    }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #6D8BFF;
+            font-size: 2rem;
+        }
 
-    .thread-title:hover {
-        color: #ffffff;
-    }
+        .thread-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
 
-    .thread-meta {
-        margin-top: 10px;
-        font-size: 0.9em;
-        color: #cccccc;
-    }
+        .thread-item {
+            background-color: #1A1A3B;
+            border-radius: 15px;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
 
-    .thread-content {
-        font-size: 1em;
-        color: #ffffff;
-        margin-top: 10px;
-    }
+        .thread-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 12px 20px rgba(0, 0, 0, 0.5);
+        }
 
-    .button {
-        display: inline-block;
-        background-color: #6200ee;
-        color: #ffffff;
-        padding: 10px 20px;
-        text-decoration: none;
-        border-radius: 4px;
-        margin: 20px;
-        font-size: 1em;
-    }
+        .thread-image {
+            width: 100%;
+            /* Adjusted for a consistent smaller image size */
+            height: 150px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            object-fit: cover;
+            display: block;
+        }
 
-    .button:hover {
-        background-color: #3700b3;
-    }
+        .thread-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #6D8BFF;
+            text-decoration: none;
+        }
 
-    .user-profile-link {
-        color: #bb86fc;
-        text-decoration: none;
-    }
+        .thread-title:hover {
+            color: #ffffff;
+        }
 
-    .user-profile-link:hover {
-        color: #ffffff;
-        text-decoration: underline;
-    }
-</style>
+        .thread-content {
+            font-size: 1rem;
+            color: #ffffff;
+            margin-top: 10px;
+            line-height: 1.6;
+            max-height: 3em;
+            /* Limit height to 3 lines of text */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
-<!-- Create Thread Button -->
-{% if session.get('loggedin') %}
+        .thread-meta {
+            font-size: 0.9em;
+            color: #cccccc;
+            margin-top: 15px;
+        }
+
+        .button {
+            display: inline-block;
+            background: #6D8BFF;
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px auto;
+            font-size: 1em;
+            font-weight: bold;
+            text-align: center;
+            transition: background 0.3s ease, transform 0.3s ease;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            display: block;
+            max-width: 200px;
+        }
+
+        .button:hover {
+            background: #4E57A3;
+            transform: scale(1.05);
+        }
+
+        .user-profile-link {
+            color: #6D8BFF;
+            text-decoration: none;
+        }
+
+        .user-profile-link:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Discussion Threads</h2>
+
+    <!-- Create Thread Button -->
+    {% if session.get('loggedin') %}
     <a href="{{ url_for('create_thread') }}" class="button">Create New Thread</a>
 {% endif %}
 
-<!-- Display Threads -->
-{% if threads %}
+    <!-- Display Threads -->
+    {% if threads %}
     <div class="thread-list">
         {% for thread in threads %}
+        <!-- Example Thread Item -->
         <div class="thread-item">
-            <!-- Display Thread Image -->
+            <!-- Render Image Only If Available -->
             {% if thread.image %}
-                <img src="{{ url_for('static', filename='uploads/' + thread.image) }}" alt="Thread Image" class="thread-image" style="max-width: 100%; height: auto;">
+            <img src="{{ url_for('static', filename='uploads/' + thread.image) }}" alt="Thread Image"
+                class="thread-image">
             {% endif %}
 
             <!-- Thread Title -->
-            <a href="{{ url_for('view_thread', thread_id=thread.id) }}" class="thread-title">
-                {{ thread.title }}
-            </a>
+            <a href="{{ url_for('view_thread', thread_id=thread.id) }}" class="thread-title">{{ thread.title }}</a>
 
             <!-- Thread Content -->
             <div class="thread-content">
-                {{ thread.content[:100] }}... <!-- Show a snippet of the message -->
+                {{ thread.content[:100] }}...
             </div>
 
             <!-- Thread Metadata -->
             <div class="thread-meta">
                 <small>
-                    Started by 
-                    <a href="{{ url_for('user_profile', user_id=thread.user_id) }}" class="user-profile-link">
-                        {{ thread.name }}
-                    </a> 
-                    on {{ thread.created_at.strftime('%B %d, %Y %I:%M %p') }}
+                    Started by
+                    <a href="{{ url_for('user_profile', user_id=thread.user_id) }}" class="user-profile-link">{{ thread.name }}</a>
+                    on on {{ thread.created_at.strftime('%B %d, %Y %I:%M %p') }}
                     {% if thread.updated_at != thread.created_at %}
                         (Edited {{ thread.updated_at.strftime('%B %d, %Y %I:%M %p') }})
                     {% endif %}
@@ -116,8 +166,11 @@
             </div>
         </div>
         {% endfor %}
+        <!-- Repeat other thread items here -->
     </div>
-{% else %}
+    {% else %}
     <p>No threads available.</p>
 {% endif %}
-{% endblock %}
+</body>
+
+</html>

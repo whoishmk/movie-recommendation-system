@@ -1,225 +1,200 @@
-{% extends "base.html" %}
-{% block content %}
-<style>
-    /* Profile Container Styling */
-    .profile-container {
-        background: linear-gradient(to right, #2e3a4e, #121821);
-        padding: 30px;
-        border-radius: 15px;
-        text-align: center;
-        max-width: 800px;
-        margin: 30px auto;
-        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
-        color: #ffffff;
-        font-family: 'Arial', sans-serif;
-    }
+<!DOCTYPE html>
+<html lang="en">
 
-    .profile-picture {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        border: 3px solid #6C63FF;
-        margin-bottom: 20px;
-        transition: transform 0.3s ease-in-out;
-    }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Raleway:400,700');
 
-    .profile-picture:hover {
-        transform: scale(1.1);
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Raleway', sans-serif;
+        }
 
-    .profile-name {
-        font-size: 2em;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
+        body {
+            background: linear-gradient(90deg, #1E1E2F, #151B54);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
 
-    .profile-description {
-        font-size: 1.2em;
-        line-height: 1.5;
-        color: #dcdcdc;
-    }
+        .profile-container {
+            max-width: 900px;
+            margin: 50px auto;
+            background: #1A1A3B;
+            border-radius: 15px;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
 
-    .profile-description a {
-        color: #6C63FF;
-        text-decoration: none;
-        font-weight: bold;
-    }
+        .header {
+            background: linear-gradient(90deg, #212A6D, #151B54);
+            text-align: center;
+            padding: 50px 20px;
+            border-bottom: 2px solid #333;
+        }
 
-    .profile-description a:hover {
-        color: #ffffff;
-    }
+        .header img {
+            width: 180px;
+            /* Increased size */
+            height: 180px;
+            /* Increased size */
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #333;
+            margin-bottom: 20px;
+        }
 
-    /* Section Headings */
-    h2, h3 {
-        color: #6C63FF;
-        margin: 20px 0 10px 0;
-        text-transform: uppercase;
-        font-size: 1.5em;
-    }
 
-    ul {
-        list-style-type: disc;
-        text-align: left;
-        margin: 10px 20px;
-    }
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
 
-    li {
-        margin: 8px 0;
-    }
+        .header h2 {
+            font-size: 1.2rem;
+            font-weight: normal;
+            color: #aaa;
+        }
 
-    /* Insights Button */
-    .insights-button a {
-        display: inline-block;
-        background: #6C63FF;
-        color: #ffffff;
-        text-transform: uppercase;
-        font-weight: bold;
-        padding: 10px 20px;
-        border-radius: 25px;
-        margin-top: 20px;
-        text-decoration: none;
-        transition: background 0.3s ease-in-out;
-    }
+        .profile-details {
+            padding: 40px 20px;
+        }
 
-    .insights-button a:hover {
-        background: #5348b7;
-    }
+        .section {
+            margin-bottom: 30px;
+        }
 
-    /* Social Icons */
-    .social-icons a {
-        font-size: 1.5em;
-        margin: 0 10px;
-        color: #6C63FF;
-        transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
-    }
+        .section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #6D8BFF;
+            border-bottom: 2px solid #6D8BFF;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
 
-    .social-icons a:hover {
-        color: #ffffff;
-        transform: scale(1.2);
-    }
+        .info {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: #ddd;
+        }
 
-    /* Cards Section */
-    .card-section {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 30px;
-        gap: 20px;
-    }
+        .info span {
+            font-weight: bold;
+            color: #fff;
+        }
 
-    .card {
-        background: #1f2630;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-        flex: 1;
-        color: #ffffff;
-        text-align: left;
-    }
+        .list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
 
-    .card h3 {
-        color: #6C63FF;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        font-size: 1.2em;
-    }
+        .list li {
+            font-size: 1rem;
+            margin: 5px 0;
+            color: #ddd;
+        }
 
-    .card ul {
-        margin: 0;
-        padding-left: 20px;
-    }
+        .edit-button {
+            display: inline-block;
+            background: #6D8BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background 0.3s ease;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
 
-    .card ul li {
-        margin: 8px 0;
-        font-size: 1em;
-    }
-</style>
+        .edit-button:hover {
+            background: #4E57A3;
+        }
 
-<div class="profile-container">
-    <!-- Profile Picture -->
-    <img src="{{ url_for('static', filename='uploads/' + user.profile_pic) }}" alt="Profile Picture" class="profile-picture">
+        @media (max-width: 768px) {
+            .profile-details {
+                padding: 20px;
+            }
 
-    <!-- Name and Description -->
-    <div class="profile-name">{{ user.name }}</div>
-    {% if user.institution %}
-    <div class="profile-description">
-        Student at {{ user.institution }} <br>
-        {% if user.institution_url %}
-        <a href="{{ user.institution_url }}">{{ user.institution_name }}</a>
-        {% endif %}
+            .header img {
+                width: 100px;
+                height: 100px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header h2 {
+                font-size: 1rem;
+            }
+
+            .section h3 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="profile-container">
+        <!-- Header Section -->
+        <div class="header">
+            <img src="{{ url_for('static', filename='uploads/' + user.profile_pic) }}" alt="Profile Picture">
+            <h1>{{ user.name }}</h1>
+            <h2>{{ user.email }}</h2>
+        </div>
+
+        <!-- Profile Details Section -->
+        <div class="profile-details">
+            <!-- Biography -->
+            <div class="section">
+                {% if user.biography %}
+                <h3>Biography</h3>
+                <p class="info">{{ user.biography }}</p>
+                {% endif%}
+            </div>
+
+            <!-- Hobbies -->
+            <div class="section">
+                {% if user.hobbies %}
+                <h3>Hobbies</h3>
+                <ul class="list">
+                    {% for hobby in user.hobbies.split(',') %}
+                    <li>{{ hobby.strip() }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+
+            <!-- Favorite Movies -->
+            <div class="section">
+                {% if user.movie_interests %}
+                <h3>Favorite Movies</h3>
+                <ul class="list">
+                    {% for movie in user.movie_interests.split(',') %}
+                    <li>{{ movie.strip() }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+
+            <!-- Edit Button -->
+            <div class="section">
+                <a href="{{ url_for('insights', user_id=user.id) }}" class="edit-button">Edit Profile</a>
+            </div>
+        </div>
     </div>
-    {% endif %}
+</body>
 
-    <!-- Biography -->
-    {% if user.biography %}
-    <h2>Biography</h2>
-    <p class="profile-description">
-        {{ user.biography }}
-    </p>
-    {% endif %}
-
-    <!-- Hobbies -->
-    {% if user.hobbies %}
-    <h3>Hobbies</h3>
-    <ul class="profile-description">
-        {% for hobby in user.hobbies.split(',') %}
-        <li>{{ hobby.strip() }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-
-    <!-- Favorite Movies -->
-    {% if user.movie_interests %}
-    <h3>Favorite Movies</h3>
-    <ul class="profile-description">
-        {% for movie in user.movie_interests.split(',') %}
-        <li>{{ movie.strip() }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-
-    <!-- Insights Button -->
-    {% if user.id %}
-    <div class="insights-button">
-        <a href="{{ url_for('insights', user_id=user.id) }}" target="_blank">View Insights</a>
-    </div>
-    {% endif %}
-
-    <!-- Social Icons -->
-    <div class="social-icons">
-        {% if user.email %}
-        <a href="mailto:{{ user.email }}"><i class="fa fa-envelope"></i></a>
-        {% endif %}
-        {% if user.twitter_url %}
-        <a href="{{ user.twitter_url }}" target="_blank"><i class="fa fa-twitter"></i></a>
-        {% endif %}
-        {% if user.linkedin_url %}
-        <a href="{{ user.linkedin_url }}" target="_blank"><i class="fa fa-linkedin"></i></a>
-        {% endif %}
-    </div>
-</div>
-
-<!-- Interests and Watchlist Cards -->
-<div class="card-section">
-    {% if user.interests %}
-    <div class="card">
-        <h3>Interests</h3>
-        <ul>
-            {% for interest in user.interests %}
-            <li>{{ interest }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-
-    {% if user.watchlist %}
-    <div class="card">
-        <h3>Watchlist</h3>
-        <ul>
-            {% for movie in user.watchlist %}
-            <li>{{ movie }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-</div>
-{% endblock %}
+</html>
