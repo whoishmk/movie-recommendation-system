@@ -504,6 +504,7 @@ def profile():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute('SELECT * FROM users WHERE id = %s', (session['id'],))
     user = cursor.fetchone()
+    print(user)
     cursor.execute('SELECT * FROM threads WHERE user_id = %s ORDER BY created_at DESC', (session['id'],))
     discussions = cursor.fetchall()
     cursor.close()
@@ -513,8 +514,14 @@ def profile():
 @login_required
 def edit_profile():
     if request.method == 'POST':
+        # Fetch form data
         name = request.form['name']
         gender = request.form['gender']
+        biography = request.form.get('biography', '')
+        hobbies = request.form.get('hobbies', '')
+        favorite_movies = request.form.get('favorite_movies', '')
+
+        # Handle profile picture upload
         profile_pic = request.files.get('profile_pic')
 
         if profile_pic and allowed_file(profile_pic.filename):
@@ -526,11 +533,12 @@ def edit_profile():
 
         cursor = mysql.connection.cursor()
         cursor.execute("""
-            UPDATE users SET name = %s, gender = %s, profile_pic = %s WHERE id = %s
-        """, (name, gender, filename, session['id']))
+            UPDATE users
+            SET name = %s, gender = %s, biography = %s, hobbies = %s, movie_interests = %s, profile_pic = %s
+            WHERE id = %s
+        """, (name, gender, biography, hobbies, favorite_movies, filename, session['id']))
         mysql.connection.commit()
         cursor.close()
-
         session['name'] = name
         session['profile_pic'] = filename
 

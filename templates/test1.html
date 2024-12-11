@@ -1,120 +1,17 @@
-<h2>Discussion Threads</h2>
+{% extends "base.html" %}
+{% block content %}
+<h2>Create New Thread</h2>
+<form action="{{ url_for('create_thread') }}" method="post" enctype="multipart/form-data">
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title" required>
 
-<style>
-    /* Container for discussion threads */
-    .thread-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-        padding: 20px;
-    }
+    <label for="content">Content</label>
+    <textarea id="content" name="content" rows="5" required></textarea>
 
-    /* Individual thread item (square box) */
-    .thread-item {
-        background-color: #1f1f1f;
-        border: 1px solid #333;
-        border-radius: 10px;
-        padding: 15px;
-        transition: transform 0.2s, box-shadow 0.2s;
-        cursor: pointer;
-    }
+    <label for="image">Add an image (optional)</label>
+    <input type="file" id="image" name="image" accept="image/*">
 
-    .thread-item:hover {
-        transform: scale(1.03);
-        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5);
-    }
+    <button type="submit">Create Thread</button>
+</form>
 
-    .thread-title {
-        font-size: 1.2em;
-        font-weight: bold;
-        margin-bottom: 10px;
-        color: #bb86fc;
-        text-decoration: none;
-    }
-
-    .thread-title:hover {
-        color: #ffffff;
-    }
-
-    .thread-meta {
-        margin-top: 10px;
-        font-size: 0.9em;
-        color: #cccccc;
-    }
-
-    .thread-content {
-        font-size: 1em;
-        color: #ffffff;
-        margin-top: 10px;
-    }
-
-    .button {
-        display: inline-block;
-        background-color: #6200ee;
-        color: #ffffff;
-        padding: 10px 20px;
-        text-decoration: none;
-        border-radius: 4px;
-        margin: 20px;
-        font-size: 1em;
-    }
-
-    .button:hover {
-        background-color: #3700b3;
-    }
-
-    .user-profile-link {
-        color: #bb86fc;
-        text-decoration: none;
-    }
-
-    .user-profile-link:hover {
-        color: #ffffff;
-        text-decoration: underline;
-    }
-</style>
-
-<!-- Create Thread Button -->
-{% if session.get('loggedin') %}
-    <a href="{{ url_for('create_thread') }}" class="button">Create New Thread</a>
-{% endif %}
-
-<!-- Display Threads -->
-{% if threads %}
-    <div class="thread-list">
-        {% for thread in threads %}
-        <div class="thread-item">
-            <!-- Display Thread Image -->
-            {% if thread.image %}
-                <img src="{{ url_for('static', filename='uploads/' + thread.image) }}" alt="Thread Image" class="thread-image" style="max-width: 100%; height: auto;">
-            {% endif %}
-
-            <!-- Thread Title -->
-            <a href="{{ url_for('view_thread', thread_id=thread.id) }}" class="thread-title">
-                {{ thread.title }}
-            </a>
-
-            <!-- Thread Content -->
-            <div class="thread-content">
-                {{ thread.content[:100] }}... <!-- Show a snippet of the message -->
-            </div>
-
-            <!-- Thread Metadata -->
-            <div class="thread-meta">
-                <small>
-                    Started by 
-                    <a href="{{ url_for('user_profile', user_id=thread.user_id) }}" class="user-profile-link">
-                        {{ thread.name }}
-                    </a> 
-                    on {{ thread.created_at.strftime('%B %d, %Y %I:%M %p') }}
-                    {% if thread.updated_at != thread.created_at %}
-                        (Edited {{ thread.updated_at.strftime('%B %d, %Y %I:%M %p') }})
-                    {% endif %}
-                </small>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-{% else %}
-    <p>No threads available.</p>
-{% endif %}
+{% endblock %}
