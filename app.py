@@ -28,7 +28,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 # MySQL configuration for flask_mysqldb
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'       # Replace with your MySQL username
-app.config['MYSQL_PASSWORD'] = 'password'   # Replace with your MySQL password
+app.config['MYSQL_PASSWORD'] = 'admin'   # Replace with your MySQL password
 app.config['MYSQL_DB'] = 'movie_recommender'
 
 mysql = MySQL(app)
@@ -53,7 +53,7 @@ movie_inv_mapper = data['movie_inv_mapper']
 db_config = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'password',
+    'password': 'admin',
     'database': 'movie_recommender'
 }
 
@@ -259,7 +259,7 @@ def login():
             flash('Account not found.')
     return render_template('login.html')
  
-@app.route('/home', methods=['GET', 'POST'])
+@app.route('/home', methods=['GET'])
 @login_required
 def home():
     # Fetch user's profile pic
@@ -269,20 +269,12 @@ def home():
     cursor.close()
     profile_pic = account['profile_pic'] if account else 'default.jpg'
 
-    # Handle user input from the form
-    if request.method == 'POST':
-        user_input = request.form.get('movie', '').strip()
-        if not user_input:
-            user_input = "Toy Story (1995)"
-    else:
-        user_input = "Toy Story (1995)"  # Default movie
+    # Get the user_input from the URL's query parameters
+    user_input = request.args.get('movie', 'Toy Story (1995)').strip()
 
-    # Integrate recommendation logic
+    # Recommendation logic
     try:
-        # Find the movie name best matching the user input
         movie_name = movie_finder(user_input)
-        
-        # Match the movie_name to get movie_id from the movies DataFrame
         movie_id = next((movies['movieId'][i] for i, title in enumerate(movies['title']) if title == movie_name), None)
 
         # Collaborative Filtering recommendations
@@ -297,7 +289,6 @@ def home():
         cb_movie_ids = [movies.iloc[i[0]]['movieId'] for i in content_similarities]
         cb_tmdb_ids = links[links['movieId'].isin(cb_movie_ids)]['tmdbId'].tolist()
         cb_posters = get_movie_posters(cb_tmdb_ids)
-
     except Exception as e:
         movie_name = user_input
         cf_posters = []
@@ -316,6 +307,7 @@ def home():
                            cf_posters=cf_posters,
                            cb_posters=cb_posters,
                            carousel_images=carousel_images)
+
 
 
 @app.route('/logout')
