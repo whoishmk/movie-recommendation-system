@@ -82,6 +82,24 @@ def find_similar_movies(movie_id, k=10, metric='cosine'):
     neighbors = kNN.kneighbors(movie_vec, return_distance=False).flatten()
     return [movie_inv_mapper[n] for n in neighbors if n != movie_ind]
 
+@app.context_processor
+def inject_unread_notifications():
+    if 'loggedin' in session and session['loggedin']:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("""
+            SELECT COUNT(*) AS unread_count 
+            FROM notifications 
+            WHERE user_id = %s AND is_read = FALSE
+        """, (session['id'],))
+        result = cursor.fetchone()
+        unread_count = result['unread_count'] if result else 0
+        cursor.close()
+        return dict(unread_notifications=unread_count)
+    else:
+        # If user is not logged in or no notifications
+        return dict(unread_notifications=0)
+
+
 def movie_finder(title):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     title_embeddings_on_device = torch.tensor(title_embeddings, device=device)
@@ -582,9 +600,130 @@ def search():
 
     return render_template('search_results.html', query=query, results=results)
 
-# If you want, you can remove the chatbot logic or keep it:
-# For brevity, we won't remove it now.
+@app.route('/chatbot_respond', methods=['POST'])
+def chatbot_respond():
+    data = request.get_json()
+    user_message = data.get('message', '').strip()
+    user_message_lower = user_message.lower()
 
+    reply = "I didn't understand that. You can say 'hi', 'how are you', ask me to 'recommend a movie', or ask for movies by genres, cast, or director."
+
+    # Simple greeting responses
+    if user_message_lower in ["hi", "hello"]:
+        reply = "Hello! How can I help you today?"
+    elif "how are you" in user_message_lower:
+        reply = "I'm just a bot, but I'm feeling great! How can I assist?"
+    elif user_message_lower in ["i love you", "love you"]:
+        reply = "Of course you love me! Afterall I was created by the most charismatic guys of 2MDS 😎"
+    elif "recommend a movie" in user_message_lower:
+        # Recommend a random movie from the database
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("SELECT title FROM movies ORDER BY RAND() LIMIT 1")
+        movie = cursor.fetchone()
+        cursor.close()
+        if movie:
+            reply = f"I recommend watching '{movie['title']}'!"
+        else:
+            reply = "I couldn't find any movies to recommend at this moment."
+
+    else:
+        # Search logic
+        # Check if user wants to find movies by genres
+        if "genres" in user_message_lower:
+            # Extract the genre from the user's message
+            possible_genres = ["sci-fi", "drama", "comedy", "crime", "romance", "action"]  # Add your known genres
+            matched_genres = [g for g in possible_genres if g in user_message_lower]
+
+            if matched_genres:
+                search_genre = matched_genres[0]
+            else:
+                words = user_message_lower.split()
+                if "genres" in words:
+                    idx = words.index("genres")
+                    if idx + 1 < len(words):
+                        search_genre = words[idx + 1]
+                    else:
+                        search_genre = None
+                else:
+                    search_genre = None
+
+            if search_genre:
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                query = "SELECT title FROM movies WHERE genres LIKE %s LIMIT 5"
+                cursor.execute(query, (f"%{search_genre}%",))
+                results = cursor.fetchall()
+                cursor.close()
+
+                if results:
+                    movie_titles = ", ".join([r['title'] for r in results])
+                    reply = f"Movies in the {search_genre} genres: {movie_titles}"
+                else:
+                    reply = f"Sorry, I couldn't find any {search_genre} genres movies."
+            else:
+                reply = "Please specify a genre. For example: 'Show me Sci-Fi genres movies'."
+
+        # Check if user wants to find movies by director
+        elif "director" in user_message_lower or "directed by" in user_message_lower:
+            words = user_message_lower.split()
+            if "director" in words:
+                idx = words.index("director")
+            elif "directed" in words:
+                idx = words.index("directed") + 2 if "by" in words else None
+            else:
+                idx = None
+
+            director_name = None
+            if idx is not None and idx < len(words):
+                director_name = " ".join(words[idx + 1:])
+            else:
+                director_name = " ".join(words[-2:])
+
+            if director_name:
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                query = "SELECT title FROM movies WHERE director LIKE %s LIMIT 5"
+                cursor.execute(query, (f"%{director_name.title()}%",))
+                results = cursor.fetchall()
+                cursor.close()
+
+                if results:
+                    movie_titles = ", ".join([r['title'] for r in results])
+                    reply = f"Movies directed by {director_name.title()}: {movie_titles}"
+                else:
+                    reply = f"Sorry, I couldn't find any movies by {director_name.title()}."
+            else:
+                reply = "Please specify a director's name. For example: 'Find movies directed by Christopher Nolan'."
+
+        # Check if user wants to find movies by cast
+        elif "cast" in user_message_lower or "actor" in user_message_lower or "starring" in user_message_lower:
+            words = user_message_lower.split()
+            if "with" in words:
+                idx = words.index("with")
+                cast_name = " ".join(words[idx + 1:])
+            elif "starring" in words:
+                idx = words.index("starring")
+                cast_name = " ".join(words[idx + 1:])
+            else:
+                cast_name = " ".join(words[-2:])
+
+            if cast_name:
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                query = "SELECT title FROM movies WHERE casts LIKE %s LIMIT 5"
+                cursor.execute(query, (f"%{cast_name.title()}%",))
+                results = cursor.fetchall()
+                cursor.close()
+
+                if results:
+                    movie_titles = ", ".join([r['title'] for r in results])
+                    reply = f"Movies featuring {cast_name.title()}: {movie_titles}"
+                else:
+                    reply = f"Sorry, I couldn't find any movies featuring {cast_name.title()}."
+            else:
+                reply = "Please specify an actor or cast member. For example: 'Show me movies with Tom Hanks'."
+
+        else:
+            reply = "I didn't understand that. You can say 'hi', 'how are you', ask me to 'recommend a movie', or ask for movies by genres, cast, or director."
+
+    return jsonify({"reply": reply})
 
 
 
