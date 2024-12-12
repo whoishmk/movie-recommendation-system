@@ -217,7 +217,7 @@ def register():
             flash('Please fill out all required fields.')
             return redirect(url_for('register'))
 
-        # Hash the password
+        # Hash the password 
         password_hash = generate_password_hash(password)
 
         # Check if account already exists

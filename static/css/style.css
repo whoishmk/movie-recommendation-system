@@ -10,7 +10,7 @@ body {
 /* Hero Section */
 .hero {
     position: relative;
-    height: 100vh; /* Full page height */
+    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -45,118 +45,7 @@ body {
     margin-top: 20px;
 }
 
-/* Keyframes for Fade-In Effect */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Features Section */
-.features-section {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding: 50px 20px;
-    text-align: center;
-    opacity: 0; /* Hidden by default */
-    transform: translateY(30px); /* Start slightly below the viewport */
-    transition: all 1s ease-in-out; /* Smooth transition */
-}
-
-.features-section.visible {
-    opacity: 1; /* Become visible */
-    transform: translateY(0); /* Slide into place */
-}
-
-.feature-card {
-    background: #1f1f1f;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    width: 250px; /* Fixed width */
-    height: 200px; /* Fixed height */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-.feature-card h3 {
-    margin-bottom: 10px;
-    color: #fff;
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-align: center;
-}
-
-.feature-card p {
-    color: #ccc;
-    font-size: 0.9rem;
-    text-align: center;
-    margin: 0;
-    line-height: 1.4;
-}
-
-.feature-card:hover {
-    transform: scale(1.05); /* Slight zoom effect */
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
-}
-
-/* Responsive Adjustments for Features Section */
-@media (max-width: 768px) {
-    .features-section {
-        flex-direction: column; /* Stack items vertically */
-    }
-
-    .feature-card {
-        width: 90%; /* Adjust width for smaller screens */
-        height: auto; /* Let height adjust dynamically */
-    }
-}
-
-/* Buttons */
-.btn-primary {
-    background-color: #6200ee;
-    border: none;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-weight: 600;
-}
-
-.btn-primary:hover {
-    background-color: #3700b3;
-}
-
-.btn-outline-light {
-    border: 2px solid white;
-    color: white;
-}
-
-.btn-outline-light:hover {
-    background-color: white;
-    color: #6200ee;
-}
-
-/* Feature Icons */
-.fas {
-    color: #6D8BFF;
-}
-
-.fas:hover {
-    color: #4E57A3;
-}
-
-/* Netflix-Style Movie Posters */
+/* Netflix-Style Posters */
 .netflix-style-container {
     position: relative;
     display: flex;
@@ -177,7 +66,6 @@ body {
 .poster-item {
     flex: 0 0 auto;
     transition: transform 0.3s ease-in-out;
-    position: relative;
 }
 
 .poster-item:hover {
@@ -185,18 +73,16 @@ body {
     z-index: 10;
 }
 
-/* Increase poster size */
 .poster-image {
-    width: 200px; /* Increased width */
-    height: 300px; /* Increased height */
+    width: 200px;
+    height: 300px;
     object-fit: cover;
     border-radius: 8px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Scroll buttons for posters */
 .scroll-btn {
-    background: none;
+    background-color: rgba(0, 0, 0, 0.5);
     border: none;
     color: #e0e0e0;
     font-size: 2rem;
@@ -206,7 +92,8 @@ body {
     z-index: 20;
     top: 50%;
     transform: translateY(-50%);
-    opacity: 0.7;
+    opacity: 0.8;
+    border-radius: 50%;
     transition: opacity 0.3s;
 }
 
@@ -217,17 +104,13 @@ body {
 .scroll-btn.left {
     left: 0;
 }
+
 .scroll-btn.right {
     right: 0;
 }
 
-/* Optional: Hide scrollbar for cleaner look */
 .netflix-style-posters::-webkit-scrollbar {
     display: none;
-}
-.netflix-style-posters {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
 }
 
 /* Responsive Adjustments */
@@ -235,7 +118,7 @@ body {
     .poster-image {
         width: 150px;
         height: 225px;
-    } 
+    }
 }
 
 @media (min-width: 1200px) {
@@ -243,4 +126,10 @@ body {
         width: 250px;
         height: 375px;
     }
+}
+
+.carousel-inner img {
+    width: 100%;
+    height: 840px; /* Set a uniform height */
+    object-fit: fill; /* Ensures the image fills the area, cropping excess if necessary */
 }
