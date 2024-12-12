@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
+{% if logged_in %}
 <!-- Carousel Section -->
 <div class="container-fluid p-0 mb-0">
     <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -23,7 +24,7 @@
 </div>
 
 <!-- Recommendations Section -->
-<h2 data-aos="fade-up">Recommendations for "{{ movie_name }}"</h2>
+<h2 data-aos="fade-up">Recommendations for "{{ movie_name }}"</h2> 
 
 <!-- Content-Based Filtering -->
 <h3 class="mt-5" data-aos="fade-up">Movies Similar to {{ movie_name }}:</h3>
@@ -133,5 +134,75 @@
         }
     });
 </script>
+
+{% else %}
+<!-- Hero Section with Background Video -->
+
+<script>
+function isInViewport(el) {
+    const rect = el.getBoundingClientRect();
+    return (
+        rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.bottom >= 0
+    );
+}
+
+// Function to handle scroll animations
+function handleScrollAnimations() {
+    const featuresSection = document.querySelector('.features-section');
+    if (isInViewport(featuresSection)) {
+        featuresSection.classList.add('visible');
+    }
+}
+
+// Add scroll event listener
+window.addEventListener('scroll', handleScrollAnimations);
+
+// Initial check for elements in viewport
+document.addEventListener('DOMContentLoaded', handleScrollAnimations);
+
+</script>
+ 
+ 
+<!-- Hero Section -->
+<div class="hero">
+    <video autoplay muted loop id="background-video">
+        <source src="\static\videos\trial.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="hero-content">
+        <h1>Discover Your Next Favorite Movie</h1>
+        <p>Join our platform to explore personalized recommendations, connect with fellow movie lovers, and much more!</p>
+    </div>
+</div>
+
+<!-- Feature Highlights Section -->
+<div class="features-section">
+    <div class="feature-card">
+        <h3>Personalized Recommendations</h3>
+        <p>Find movies tailored to your tastes with our advanced recommendation engine.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Engage in Discussions</h3>
+        <p>Share your opinions and connect with movie enthusiasts in our discussion forums.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Build Your Profile</h3>
+        <p>Create a personalized profile to keep track of your favorite movies and interests.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Search for Movies</h3>
+        <p>Use our powerful search tool to find movies, genres, and actors.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Rate Your Favorites</h3>
+        <p>Rate and review your favorite movies to share with the community.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Customize Your Experience</h3>
+        <p>Tailor the platform to your preferences for an enhanced experience.</p>
+    </div>
+</div>
+{% endif %}
 
 {% endblock %}

@@ -55,11 +55,15 @@
 
         .thread-image {
             width: 100%;
-            /* Adjusted for a consistent smaller image size */
-            height: 150px;
+            aspect-ratio: 16 / 9;
+            /* Maintain a 16:9 aspect ratio */
             border-radius: 10px;
+            /* Smooth edges */
             margin-bottom: 15px;
             object-fit: cover;
+            /* Ensures the image fills the area, cropping excess */
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            /* Optional border for a framed look */
             display: block;
         }
 
