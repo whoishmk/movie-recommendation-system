@@ -167,13 +167,16 @@
             <li><a href="{{ url_for('view_notifications') }}">
                 Notifications{% if unread_notifications > 0 %} ({{ unread_notifications }}){% endif %}
             </a></li>
-            
         </ul>
-        <!-- Search Bar -->
+
+        <!-- Search Bar (Only on Home Route) -->
+        {% if request.endpoint == 'home' %}
         <form id="searchForm" method="GET">
             <input type="text" name="movie" placeholder="Search..." value="{{ movie_name }}">
             <button type="submit">Recommend</button>
         </form>
+        {% endif %}
+
         <!-- Profile Section -->
         {% if session.get('loggedin') %}
         <div class="profile-dropdown">

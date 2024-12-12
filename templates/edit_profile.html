@@ -1,5 +1,4 @@
-{% extends "base.html" %}
-{% block content %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -131,7 +130,7 @@
             <select id="gender" name="gender" required>
                 <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
                 <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
-                <option value="Rather not say" {% if user.gender == 'Rather not say' %}selected{% endif %}>Rather not
+                <option value="Rather not say" {% if user.gender =='Rather not say' %}selected{% endif %}>Rather not
                     say</option>
             </select>
 
@@ -160,4 +159,3 @@
 </body>
 
 </html>
-{% endblock %}

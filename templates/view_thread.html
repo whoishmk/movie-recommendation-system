@@ -25,19 +25,20 @@
         }
 
         .thread-image {
-            width: 100%; /* Ensures it spans the container width */
-            aspect-ratio: 4 / 3; /* Maintains a 4:3 aspect ratio */
-            object-fit: cover; /* Ensures the image covers the area proportionally */
-            border-radius: 10px; /* Adds rounded corners */
-            margin-bottom: 20px; /* Adds spacing below the image */
-            border: 2px solid rgba(255, 255, 255, 0.2); /* Optional: Adds a subtle border */
-            display: block; /* Ensures it behaves as a block-level element */
-        }
+    width: 100%; /* Ensures it spans the container width */
+    aspect-ratio: 4 / 3; /* Maintains a 4:3 aspect ratio */
+    object-fit: contain; /* Ensures the entire image is visible */
+    border-radius: 10px; /* Adds rounded corners */
+    margin-bottom: 20px; /* Adds spacing below the image */
+    border: 2px solid rgba(255, 255, 255, 0.2); /* Optional: Adds a subtle border */
+    display: block; /* Ensures it behaves as a block-level element */
+    background-color: #1f1f1f; /* Adds a background to fill empty spaces */
+}
 
         .thread-container {
             background-color: #1f1f1f;
             border-radius: 10px;
-            padding: 20px;
+            padding: 10px;
             box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5);
             margin-bottom: 20px;
         }
