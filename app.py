@@ -242,7 +242,7 @@ def login():
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM users WHERE email = %s', (email,))
         account = cursor.fetchone()
-        cursor.close()
+        cursor.close() 
 
         if account:
             password_hash = account['password_hash']
@@ -260,53 +260,57 @@ def login():
     return render_template('login.html')
  
 @app.route('/home', methods=['GET'])
-@login_required
 def home():
-    # Fetch user's profile pic
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('SELECT profile_pic FROM users WHERE id = %s', (session['id'],))
-    account = cursor.fetchone()
-    cursor.close()
-    profile_pic = account['profile_pic'] if account else 'default.jpg'
+    if 'loggedin' in session:
+        # Fetch user's profile pic
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT profile_pic FROM users WHERE id = %s', (session['id'],))
+        account = cursor.fetchone()
+        cursor.close() 
+        profile_pic = account['profile_pic'] if account else 'default.jpg'
 
-    # Get the user_input from the URL's query parameters
-    user_input = request.args.get('movie', 'Toy Story (1995)').strip()
+        # Get the user_input from the URL's query parameters
+        user_input = request.args.get('movie', 'Toy Story (1995)').strip()
 
-    # Recommendation logic
-    try:
-        movie_name = movie_finder(user_input)
-        movie_id = next((movies['movieId'][i] for i, title in enumerate(movies['title']) if title == movie_name), None)
+        # Recommendation logic
+        try:
+            movie_name = movie_finder(user_input)
+            movie_id = next((movies['movieId'][i] for i, title in enumerate(movies['title']) if title == movie_name), None)
 
-        # Collaborative Filtering recommendations
-        similar_movies = find_similar_movies(movie_id, k=10)
-        cf_tmdb_ids = links[links['movieId'].isin(similar_movies)]['tmdbId'].tolist()
-        cf_posters = get_movie_posters(cf_tmdb_ids)
+            # Collaborative Filtering recommendations
+            similar_movies = find_similar_movies(movie_id, k=10)
+            cf_tmdb_ids = links[links['movieId'].isin(similar_movies)]['tmdbId'].tolist()
+            cf_posters = get_movie_posters(cf_tmdb_ids)
 
-        # Content-Based Filtering recommendations
-        movie_index = movies[movies['movieId'] == movie_id].index[0]
-        content_similarities = list(enumerate(cosine_sim[movie_index]))
-        content_similarities = sorted(content_similarities, key=lambda x: x[1], reverse=True)[1:11]
-        cb_movie_ids = [movies.iloc[i[0]]['movieId'] for i in content_similarities]
-        cb_tmdb_ids = links[links['movieId'].isin(cb_movie_ids)]['tmdbId'].tolist()
-        cb_posters = get_movie_posters(cb_tmdb_ids)
-    except Exception as e:
-        movie_name = user_input
-        cf_posters = []
-        cb_posters = []
-        flash(f"No recommendations found for '{user_input}'. Error: {e}", "danger")
+            # Content-Based Filtering recommendations
+            movie_index = movies[movies['movieId'] == movie_id].index[0]
+            content_similarities = list(enumerate(cosine_sim[movie_index]))
+            content_similarities = sorted(content_similarities, key=lambda x: x[1], reverse=True)[1:11]
+            cb_movie_ids = [movies.iloc[i[0]]['movieId'] for i in content_similarities]
+            cb_tmdb_ids = links[links['movieId'].isin(cb_movie_ids)]['tmdbId'].tolist()
+            cb_posters = get_movie_posters(cb_tmdb_ids)
+        except Exception as e:
+            movie_name = user_input
+            cf_posters = []
+            cb_posters = []
+            flash(f"No recommendations found for '{user_input}'. Error: {e}", "danger")
+  
+        # Fetch carousel images
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT image_path FROM carousel')
+        carousel_images = [row['image_path'] for row in cursor.fetchall()]
+        cursor.close()
 
-    # Fetch carousel images
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('SELECT image_path FROM carousel')
-    carousel_images = [row['image_path'] for row in cursor.fetchall()]
-    cursor.close()
-
-    return render_template('home.html',
-                           profile_pic=profile_pic,
-                           movie_name=movie_name,
-                           cf_posters=cf_posters,
-                           cb_posters=cb_posters,
-                           carousel_images=carousel_images)
+        return render_template('home.html',
+                               profile_pic=profile_pic,
+                               movie_name=movie_name,
+                               cf_posters=cf_posters,
+                               cb_posters=cb_posters,
+                               carousel_images=carousel_images,
+                               logged_in=True)
+    else:
+        # Guest user view
+        return render_template('home.html', logged_in=False)
 
 
 
